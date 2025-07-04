@@ -1,6 +1,6 @@
 # Shioda Conjecture Research Code
 
-This repository contains research code related to the Shioda Conjecture and Bauer surfaces with geometric genus 0.
+This repository contains research code related to the Shioda Conjecture and product-quotient surfaces with geometric genus 0.
 
 ## Overview
 
