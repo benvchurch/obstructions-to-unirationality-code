@@ -158,7 +158,8 @@ end function;
 
 DirProd:=function(G1,G2)
   G1xG2:=DirectProduct(G1,G2); vars:=[];
-  n:=[NumberOfGenerators(G1),NumberOfGenerators(G2)];
+  if Category(G1) eq GrpPC then n:=[NPCgens(G1),NPCgens(G2)];
+  else n:=[NumberOfGenerators(G1),NumberOfGenerators(G2)]; end if;
    for i in [1..n[1]+n[2]] do Append(~vars,G1xG2.i); end for;
    SplittedVars:=Partition(vars,n);
    injs:=[hom< G1->G1xG2 | SplittedVars[1]>,
@@ -191,25 +192,63 @@ end function;
 
 /* use pair of sequences of group elements to compute Pi as before */
 
+Checks := function(pairsofseqs, gr)
+  if #pairsofseqs ne 2 then
+    error "error: pairsofseqs must be a list of two sequences of group elements";
+  end if;
+  if &* pairsofseqs[1] ne Id(gr) then
+    error "error: pairsofseqs[1] must be a list of spherical elements";
+  end if;
+  if &* pairsofseqs[2] ne Id(gr) then
+    error "error: pairsofseqs[2] must be a list of spherical elements";
+  end if;
+  if not sub<gr | pairsofseqs[1]> eq gr then
+    error "error: pairsofseqs[1] does not generate gr";
+  end if;
+  if not sub<gr | pairsofseqs[2]> eq gr then
+    error "error: pairsofseqs[2] does not generate gr";
+  end if;
+  return true;
+end function;
+
 Pi1:=function(pairsofseqs,gr)
+  Checks(pairsofseqs, gr);
   T1,f1:=PolyGroup(pairsofseqs[1],gr); 
   T2,f2:=PolyGroup(pairsofseqs[2],gr);
   T1xT2,inT,proT:=DirProd(T1,T2); 
-  grxgr,inG:=DirProd(gr,gr);
+  grxgr,inG:=DirectProduct(gr,gr);
   Diag:=MapProd(inG[1],inG[2])(gr);
   f:=MapProd(proT[1]*f1*inG[1],proT[2]*f2*inG[2]);
-  H:=Rewrite(T1xT2,Diag@@f); rels:=[];
-  for i in [1..#pairsofseqs[1]] do g1:=pairsofseqs[1][i];
-  for j in [1..#pairsofseqs[2]] do g2:=pairsofseqs[2][j];
-  for d1 in [1..Order(g1)-1] do
-  for d2 in [1..Order(g2)-1] do
-    test,h:=IsConjugate(gr,g1^d1,g2^d2);
-    if test then for c in Centralizer(gr,g1^d1) do
-     Append(~rels, T1xT2.i^d1 * 
-            ((T1xT2.(j+#pairsofseqs[1])^d2)^(inT[2]((h^-1*c) @@ f2))));
-    end for; end if;
-  end for; end for; end for; end for;
-  return Simplify(quo<H|rels>);
+  
+  // Get the preimage of the diagonal
+  H, rewrite_map := Rewrite(T1xT2,Diag@@f);
+  
+  // Create additional relations
+  torsion_rels := [];
+
+  for i in [1..#pairsofseqs[1]] do
+    g1 := pairsofseqs[1][i];
+    for j in [1..#pairsofseqs[2]] do
+      g2 := pairsofseqs[2][j];
+      for d1 in [1..Order(g1) - 1] do
+        for d2 in [1..Order(g2) - 1] do
+          test, h := IsConjugate(gr, g1^d1, g2^d2);
+          if test then
+            for c in Centralizer(gr, g1^d1) do
+              rel := T1xT2.i^d1 * ((T1xT2.(j + #pairsofseqs[1])^d2)^(inT[2]((h^-1 * c) @@ f2)));
+              if not rel in Domain(rewrite_map) then
+                print "issue";
+              else
+                Append(~torsion_rels, rewrite_map(rel));
+              end if;
+            end for;
+          end if;
+        end for;
+      end for;
+    end for;
+  end for;
+  // Return the quotient
+  return Simplify(quo<H | torsion_rels>);
 end function;
 
 ChiCurve := function(mult, ordG)
@@ -221,13 +260,23 @@ ChiCurve := function(mult, ordG)
 end function;
 
 
+ChiCurvePermutation := function(action, elements, degree)
+    s := (-2) * degree;
+    for g in elements do
+        cycles := CycleStructure(action(g));
+        for pair in cycles do 
+            s := s + (pair[1] - 1) * pair[2];
+        end for;
+    end for;
+    return s;
+end function;
+
 K2 := function(pairofseqs, G)
     ord1 := [Order(g) : g in pairofseqs[1]];
     ord2 := [Order(g) : g in pairofseqs[2]];
     totalBasket, lTot, eTot, kTot := ComputeBasket(pairofseqs[1], pairofseqs[2], G);
     return 2*ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - kTot;
 end function;
-
 
 SegreNumber := function(pairofseqs, G)
     ord1 := [Order(g) : g in pairofseqs[1]];
@@ -265,7 +314,7 @@ BruinNumber := function(pairofseqs, G)
         end if;
       end if;
     end for;
-    print "Genus: ", (ChiCurve(ord1, Order(G)) + 2)/2, (ChiCurve(ord2, Order(G)) + 2)/2;
+//    print "Genus: ", (ChiCurve(ord1, Order(G)) + 2)/2, (ChiCurve(ord2, Order(G)) + 2)/2;
     return 1/6*(ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - eTot - kTot) + S;
 end function;
 
@@ -278,11 +327,36 @@ DiagonalFormNumber := function(pairofseqs, G)
       if IsCanonical(r) then 
         singConditions := singConditions + 2;
       else 
-        b := Denominator(r);
-        singConditions := singConditions + 2 * l(r) * ((b + 1)/b * (b - 2) + b/2 * (b + 1)^2/b^2);
+        singConditions := singConditions + 3 * (&+ContFrac(r) - 2 * l(r)) + 2;
       end if;
     end for;
     
     return 2*ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - kTot - singConditions;
 end function;
+
+runData := function(G, seq1, seq2)
+    totalBasket, lTot, eTot, kTot := ComputeBasket(seq1, seq2, G);
+    print "totalBasket: ", totalBasket;
+    print "Number of Singularities: ", #totalBasket;
+    print "K2: ", K2([seq1,seq2],G);
+    print "Segre: ", SegreNumber([seq1,seq2],G);
+    print "RR13: ", RR13Number([seq1, seq2], G);
+    print "Bruin: ", BruinNumber([seq1, seq2], G);
+    print "Diagonal: ", DiagonalFormNumber([seq1, seq2], G);
+    //print "pi_1: ", Order(Pi1([seq1, seq2], G));
+    return "";
+end function;
+
+findData := function(G, seq1, seq2)
+    if Order(Pi1([seq1, seq2], G)) ne 1 then
+        return false;
+    end if;
+    
+    rr13 := RR13Number([seq1, seq2], G);
+    bruin := BruinNumber([seq1, seq2], G);
+    diagonal := DiagonalFormNumber([seq1, seq2], G);
+    
+    return rr13 gt 0 or bruin gt 0 or diagonal gt 0;
+end function;
+
 
