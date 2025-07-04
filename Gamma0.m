@@ -1,24 +1,6 @@
 import "intermediate_extensions.m": GenusIntermediateExtension, Genus, 
     IntermediateMonodromy, GetMonodromyIntermediateExtension;
 
-// Function to save computed data to a file
-saveComputedData := function(filename, data)
-    file := Open(filename, "w");
-    fprintf file, "%o\n", data;
-    delete file;
-end function;
-
-// Function to load computed data from a file
-loadComputedData := function(filename)
-    if not IsFile(filename) then
-        return false, _;
-    end if;
-    file := Open(filename, "r");
-    data := eval Read(file);
-    delete file;
-    return true, data;
-end function;
-
 // Create the group PSL(2, Z/13^2Z)
 Z := Integers();
 R := Integers(13^2);
