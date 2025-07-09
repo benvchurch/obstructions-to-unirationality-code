@@ -211,7 +211,52 @@ Checks := function(pairsofseqs, gr)
   return true;
 end function;
 
-Pi1:=function(pairsofseqs,gr)
+Pi1:=function(seq1,seq2, G) /* the arguments are sequences of elements of the monodromy group G */
+T1:=PolyGroup(seq1); T2,f2:=PolyGroup(seq2); G:=Parent(seq1[1]);
+T1xT2:=DirectProduct(T1,T2);
+inT2:=hom< T2->T1xT2 | [T1xT2.6, T1xT2.7, T1xT2.8, T1xT2.9, T1xT2.10]>;
+GxG,inG:=DirectProduct(G,G); m:=NumberOfGenerators(G); L:=[ ];
+for i in [1..m] do Append(~L,GxG.i*GxG.(i+m)); end for;
+Diag:=hom<G->GxG|L>(G);
+f:=hom<T1xT2->GxG|
+inG[1](seq1[1]),inG[1](seq1[2]),inG[1](seq1[3]),
+inG[1](seq1[4]),inG[1](seq1[5]),
+inG[2](seq2[1]),inG[2](seq2[2]),inG[2](seq2[3]),
+inG[2](seq2[4]),inG[2](seq2[5])>;
+H:=Rewrite(T1xT2,Diag@@f); TorsH:=[ ];
+for i in [1..5] do if IsEven(Order(seq1[i])) then
+for j in [1..5] do if IsEven(Order(seq2[j])) then
+a:=IntegerRing()!(Order(seq1[i])/2); b:=IntegerRing()!(Order(seq2[j])/2);
+test,h:= IsConjugate(G,seq1[i]^a,seq2[j]^b);
+if test then for c in Centralizer(G,seq1[i]^a) do
+Append(~TorsH, T1xT2.i^a * ((T1xT2.(j+5)^b)^(inT2((h^-1*c) @@ f2))));
+end for; end if;
+end if; end for; end if; end for;
+return Simplify(quo<H | TorsH>);
+end function;
+
+Pi1_v2:=function(pairsofseqs,gr)
+  T1,f1:=PolyGroup(pairsofseqs[1],gr); 
+  T2,f2:=PolyGroup(pairsofseqs[2],gr);
+  T1xT2,inT,proT:=DirProd(T1,T2); 
+  grxgr,inG:=DirectProduct(gr,gr);
+  Diag:=MapProd(inG[1],inG[2])(gr);
+  f:=MapProd(proT[1]*f1*inG[1],proT[2]*f2*inG[2]);
+  H:=Rewrite(T1xT2,Diag@@f); rels:=[];
+  for i in [1..#pairsofseqs[1]] do g1:=pairsofseqs[1][i];
+  for j in [1..#pairsofseqs[2]] do g2:=pairsofseqs[2][j];
+  for d1 in [1..Order(g1)-1] do
+  for d2 in [1..Order(g2)-1] do
+    test,h:=IsConjugate(gr,g1^d1,g2^d2);
+    if test then for c in Centralizer(gr,g1^d1) do
+     Append(~rels, T1xT2.i^d1 * 
+            (((T1xT2.(j+#pairsofseqs[1]))^d2)^(inT[2]((h^-1*c) @@ f2))));
+    end for; end if;
+  end for; end for; end for; end for;
+  return Simplify(quo<H|rels>);
+end function;
+
+MyPi1:=function(pairsofseqs,gr)
   Checks(pairsofseqs, gr);
   T1,f1:=PolyGroup(pairsofseqs[1],gr); 
   T2,f2:=PolyGroup(pairsofseqs[2],gr);

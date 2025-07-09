@@ -23,50 +23,6 @@ ZK := RingOfIntegers(K);
 Kabs := AbsoluteField(K);
 ZKabs := Integers(Kabs);
 
-// Function to save elliptic curve data
-function save_elliptic_curve_data(Kabs, E)
-  // Create a string representation of the data
-  data_str := Sprintf("Kabs_defining_polynomial := %o;\n", DefiningPolynomial(Kabs));
-  
-  // Save the elliptic curve coefficients
-  a1, a2, a3, a4, a6 := Explode(aInvariants(E));
-  data_str := data_str cat Sprintf("a1 := %o;\n", a1);
-  data_str := data_str cat Sprintf("a2 := %o;\n", a2);
-  data_str := data_str cat Sprintf("a3 := %o;\n", a3);
-  data_str := data_str cat Sprintf("a4 := %o;\n", a4);
-  data_str := data_str cat Sprintf("a6 := %o;\n", a6);
-  
-  // Write to file
-  Write("elliptic_curve_data.m", data_str);
-  print "Elliptic curve data saved to elliptic_curve_data.m";
-end function;
-
-function load_elliptic_curve_data()
-  // Check if the data file exists
-  if not IsFile("elliptic_curve_data.m") then
-    print "No saved elliptic curve data found. Run compute_elliptic_curve() first.";
-    return false, _, _;
-  end if;
-  
-  // Load the data file - use Read() and eval() instead of load
-  data_str := Read("elliptic_curve_data.m");
-  eval data_str;
-  
-  // Reconstruct the field
-  P<x> := PolynomialRing(Rationals());
-  Kabs := NumberField(P!Kabs_defining_polynomial);
-  
-  // Reconstruct the elliptic curve
-  E := EllipticCurve([a1, a2, a3, a4, a6]);
-  
-  print "Loaded elliptic curve data:";
-  print "Field Kabs:", Kabs;
-  print "Elliptic curve E:", E;
-  print "j-invariant:", jInvariant(E);
-  
-  return true, Kabs, E;
-end function;
-
 function compute_elliptic_curve()
   primesArray := [
   [7, 7, 2*w^2 - w - 3],
@@ -241,7 +197,7 @@ function compute_elliptic_curve()
   primes := [ideal<ZF | {F!x : x in I}> : I in primesArray];
 
   heckePol := x^2 - 12;
-  K<e> := NumberField(heckePol);
+  Kf<e> := NumberField(heckePol);
 
   heckeEigenvaluesArray := [e, -1/2*e, 1, 0, -3/2*e, 2, 1/2*e, -9, 1/2*e, 2*e, 3, 3, -8, -e, -e, -6, -6, -4*e, 6, 6, 4*e, 5/2*e, -4*e, 5/2*e, -2*e, 9/2*e, -3, -1/2*e, 3*e, -2, 3*e, -16, -2*e, -2*e, 12, -5*e, 12, 13/2*e, 0, -13, 3, 3, -9/2*e, 7*e, -6*e, 4, 2*e, 16, -10, 4*e, 6, 6, -e, 18, -e, -30, 9, 6*e, -11/2*e, 21, 21, -7*e, -4, -4, 13, -13, 13, 3/2*e, -1, -14, 16, 2*e, -10, 30, 30, 30, -5/2*e, 4*e, 4*e, -15/2*e, -15/2*e, -34, 15/2*e, -11/2*e, -11/2*e, 5/2*e, -4*e, -21/2*e, 22, -4, 6*e, 3*e, 24, -10*e, -42, 36, 36, 28, -3*e, -3*e, 2*e, 2*e, 2*e, 43, -22, 17, 33, 5/2*e, -6, 34, e, 8, -32, 9*e, -32, -2*e, 11*e, -42, -2, -7/2*e, -10*e, 0, 13/2*e, 39, -26, 26, -26, -11*e, 15*e, -11*e, -25/2*e, -22, 27/2*e, 2*e, -23, -49, -14*e, 18, 12*e, -9*e, 4*e, -9*e, -7*e, -30, 48, -18, e, -18, 35, 22, 6*e, -54, 19/2*e, -7/2*e, -13*e, 26, 0, -24, -3*e, 10*e, 33/2*e, -37, 10*e, 18, -21, -21, 4*e, 32, -46];
   heckeEigenvalues := AssociativeArray();
@@ -332,20 +288,20 @@ function compute_elliptic_curve()
 
   qqs := [ZKabs!!qq : qq in qqs];
 
+  curves := [];
 
   for NNp in Divisors(ZKabs!!NN) do
     try
-      EllipticCurveSearch(ZKabs!!NNp, 20 : Primes := qqs, Traces := aqqs);
+      Es := EllipticCurveSearch(ZKabs!!NNp, 20 : Primes := qqs, Traces := aqqs);
+      for E in Es do
+        Append(~curves, E);
+      end for;
     catch e;
       print e;
     end try;
   end for;
 
-  E := $3[1];
-  // Save the data automatically
-  save_elliptic_curve_data(Kabs, E);
-  
-  return E;
+  return curves;
 end function;
 
 function find_supersingular_prime(D, K, jE, BadPrimes) // uses Elkies's method to find a supersingular prime quickly 
@@ -384,11 +340,9 @@ function find_minimal_supersingular_prime(Kabs, E, badPrimes) // give a field Ka
   min := bounds[1]; 
 
   for pp in primes do
-    for p in badPrimes do
-      if p in pp then
-        continue;
-      end if;
-    end for;
+    if (ZKabs ! Norm(Conductor(E))) in pp then 
+      continue;
+    end if;
     if TraceOfFrobenius(E, pp) eq 0 then
       pp;
       Norm(pp); 
@@ -401,19 +355,26 @@ function find_minimal_supersingular_prime(Kabs, E, badPrimes) // give a field Ka
   return min;
 end function;
 
-// Auto-load function that runs when the script is loaded
-function auto_load_elliptic_curve_data()
-  success, Kabs, E := load_elliptic_curve_data();
-  if success then
-    print "Successfully loaded elliptic curve data.";
-    print "You can now use Kabs and E variables directly.";
-    print "To find minimal supersingular prime, run: find_minimal_supersingular_prime(Kabs, E);";
-  else
-    print "No saved data found. Run compute_elliptic_curve() to generate and save data.";
-  end if;
+
+
+function print_traces(E1, E2, bound)
+  pps := PrimesUpTo(bound, F);
+  for pp in pps do
+    if (ZF ! 2) in pp or (ZF ! 3) in pp or (ZF ! 13) in pp then
+      continue;
+    end if;
+    qqs := Factorization(ZK!!pp); 
+    print "Prime of F with norm: ", Norm(pp);
+    for dat in qqs do
+      qq := ZKabs !! dat[1];
+      print TraceOfFrobenius(E1, qq), TraceOfFrobenius(E2, qq); 
+    end for;
+  end for;
+  return true;
 end function;
 
-jE := Kabs ! 10;
-E := EllipticCurve([0,0,0,0,1]);
+E1 := curves[1];
+E2 := curves[2];
 
-find_minimal_supersingular_prime(Kabs, E, [2,3,13]);
+find_minimal_supersingular_prime(Kabs, E1, [2,3,13]);
+print_traces(E1, E2, 100);

@@ -14,18 +14,12 @@ This project implements computational methods for studying algebraic surfaces, p
 ## Repository Structure
 
 ### Core Files
+- `verify_examples.m` - Verifies computations for examples in the paper
 - `hilbert_modular_forms.m` - Use Hilbert modular forms to compute j-invariant of elliptic curve factor in jacobian
 - `group_reps.m` - Group representation computations for computing cohomology of curves
 - `subgroups.m` - Subgroup lattice calculations
 - `invariants.m` - Computation of surface invariants
 - `compute_examples.m` - Example computations and tests
-
-### Zeta Function Module
-The `zeta_function/` directory contains specialized code for:
-- Zeta function computations
-- Lifting algorithms
-- Correctness checks
-- Runtime comparisons
 
 ### Diagrams
 The `diagrams/` directory contains LaTeX-generated visualizations of:

@@ -324,6 +324,8 @@ SimultaneouslyConjugate := function(G, seq1, seq2)
     return false;
 end function;
 
+if false then 
+
 G := SL(2,8);
 seq := FindBelyiCurve(G, [2,3,4], 7);
 &* seq;
@@ -332,8 +334,7 @@ conj := cl(seq);
 
 
 // test for Accola-Maclachlan curve of genus 15, looks like LMFDB labeled its conjugacy classes inconsitently 
- 
-if false then 
+
 
 G := SmallGroup(128,150);
 seq := FindBelyiCurve(G, [2,9,19], 15);

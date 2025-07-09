@@ -1,3 +1,5 @@
+// In this file we verify that certain "conjugated" Shimura curves at level Gamma_0(p_13^2) have the correct genera 
+
 import "intermediate_extensions.m": GenusIntermediateExtension, Genus, 
     IntermediateMonodromy, GetMonodromyIntermediateExtension;
 
