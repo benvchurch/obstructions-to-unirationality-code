@@ -1,6 +1,6 @@
 // Define a function to fetch the content of a URL using curl
 function FetchURL(url)
-    temp_filename := "temp_output.txt";
+    temp_filename := "LMFDB_data/temp_output.txt";
     // Build the curl command; note the use of quotes in case the URL contains special characters.
     curl_command := Sprintf("curl -L \"%o\" > %o", url, temp_filename);
     // Execute the system command. System returns an exit status (0 means success).
@@ -13,7 +13,7 @@ end function;
 
 // Add this new function at the top
 function RunWithTimeout(command, timeout_sec)
-    status_filename := "timeout_status";
+    status_filename := "LMFDB_data/timeout_status";
     // Use shell timeout command and write exit status to file
     full_command := Sprintf("echo \"%o\" | timeout %o  magma -b > /dev/null 2>&1; echo $? > %o", 
                           command, timeout_sec, status_filename);
@@ -31,7 +31,7 @@ url := Sprintf("https://www.lmfdb.org/api/hgcwa_passports/?group=%%5B%o,%o%%5D&_
 
 // Process JSON with jq to extract relevant fields and format as Magma code
 json_filename := FetchURL(url);
-magma_filename := "temp_processed.m";
+magma_filename := "LMFDB_data/temp_processed.m";
 
 // jq command to parse JSON and format for Magma
 Curve := recformat<

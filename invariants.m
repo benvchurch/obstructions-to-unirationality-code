@@ -88,14 +88,6 @@ BasketByAPairOfGens:=function(group,gen1,gen2)
  return basket;
 end function;
 
-// We could use it to compute the basket of singularities of 
-// every constructed surface, but this is too expensive for our 
-// purposes. The next program only checks if, given two sets of 
-// spherical generators and a "candidate" basket, the resulting 
-// surface has the prescribed basket. The advantage is that in 
-// the wrong cases, the script stops when it finds a "forbidden" 
-// singularities, without losing time computing all the other 
-// singular points.
 
 /* compute the numerical invariants of a quotient singularity (1, a)/n represented as the rational number a/n */
 

@@ -21,6 +21,9 @@ This project implements computational methods for studying algebraic surfaces, p
 - `invariants.m` - Computation of surface invariants
 - `compute_examples.m` - Example computations and tests
 
+### External Code
+- `Bauer and Pignatelli code/` - Contains code from Bauer and Pignatelli papers [BP12] and [BP16]
+
 ### Diagrams
 The `diagrams/` directory contains LaTeX-generated visualizations of:
 - Subgroup lattices
@@ -37,6 +40,16 @@ This code is written in Magma, a computational algebra system. To run the exampl
 ## Research Context
 
 This work is supplemental to the paper "Obstructions to unirationality for product-quotient surfaces over \overline{\mathbb{F}_p}", which relates to the Shioda Conjecture. The code implements various computational techniques for studying these surfaces and their associated invariants.
+
+## Acknowledgments
+
+This project builds upon and is inspired by the computational work of Bauer, Catanese, Grunewald, and Pignatelli. Their code from [BCGP12], [BP12], and [BP16] has been adapted and extended for this research. The `Bauer and Pignatelli code/` directory contains their original implementations.
+
+## References
+
+- [BCGP12] I. Bauer, F. Catanese, F. Grunewald, R. Pignatelli. *Quotients of Products of Curves, New Surfaces with p_g = 0 and their Fundamental Groups.*
+- [BP12] I. Bauer, R. Pignatelli. *The Classification of Minimal Product-Quotient Surfaces with p_g = 0.*
+- [BP16] I. Bauer, R. Pignatelli. *Product-Quotient Surfaces: New Invariants and Algorithms.*
 
 ## Files
 
