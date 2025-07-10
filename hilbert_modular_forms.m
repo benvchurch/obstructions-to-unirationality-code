@@ -376,5 +376,5 @@ end function;
 E1 := curves[1];
 E2 := curves[2];
 
-find_minimal_supersingular_prime(Kabs, E1, [2,3,13]);
+find_minimal_supersingular_prime(Kabs, E1, [13]);
 print_traces(E1, E2, 100);

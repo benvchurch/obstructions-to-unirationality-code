@@ -1,0 +1,26 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: obstructions-to-unirationality-code
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Benjamin
+    family-names: Church
+    email: bvchurch@stanford.edu
+    affiliation: Stanford University
+    orcid: 'https://orcid.org/0009-0002-1503-5575'
+repository-code: >-
+  https://github.com/benvchurch/obstructions-to-unirationality-code
+url: 'https://web.stanford.edu/~bvchurch/about/'
+abstract: >+
+  This work is supplemental to the paper "Obstructions to
+  unirationality for product-quotient surfaces over
+  \overline{\mathbb{F}_p}", which relates to the Shioda
+  Conjecture. The code implements various computational
+  techniques for studying these surfaces and their
+  associated invariants.
+
