@@ -1,9 +1,43 @@
-// Now we need a script for computing all baskets related to a 
-// certain multiplicity. First we need to compute the 
-// continued fraction of a rational  number and viceversa the 
-// rational number of a continued fraction: these are 
-// respectively the programs 
-// ContFrac: for 0<s<1, the continued fraction of 1/s, 
+/*******************************************************************************
+ * invariants.m
+ *
+ * Purpose:
+ *   Core library for computing invariants of product-quotient surfaces.
+ *   Provides functions for singularity baskets, continued fractions, and
+ *   numerical invariants (K^2, Segre number, diagonal form number, etc.)
+ *
+ * Main functions:
+ *   - ContFrac(s): Compute continued fraction expansion of 1/s for 0 < s < 1
+ *   - RatNum(seq): Reconstruct rational from continued fraction
+ *   - QuotSings(n): Representatives for quotient singularities of multiplicity n
+ *   - BasketsWM(mults): Generate baskets of singularities with given multiplicities
+ *   - BasketByAPairOfGens(G, g1, g2): Compute singular points from generator pair
+ *   - Gamma(r), GammaBas(bas): Gamma function for singularities
+ *   - k(r), l(r), e(r): Numerical invariants of quotient singularities
+ *   - K2, SegreNumber, DiagonalFormNumber: Surface invariant computations
+ *   - Pi1, MyPi1: Fundamental group computations for product-quotient surfaces
+ *   - HodgeDiamond: Display Hodge diamond of a surface
+ *
+ * Dependencies:
+ *   None (standalone library)
+ *
+ * Usage:
+ *   load "invariants.m";
+ *   // or
+ *   import "invariants.m": k, ContFrac, l, K2, SegreNumber;
+ *
+ * Mathematical background:
+ *   Product-quotient surfaces are (C1 x C2)/G where C1, C2 are curves and G
+ *   is a finite group acting freely on the product outside finitely many points.
+ *   The singularities are cyclic quotient singularities classified by rationals.
+ ******************************************************************************/
+
+// Now we need a script for computing all baskets related to a
+// certain multiplicity. First we need to compute the
+// continued fraction of a rational  number and viceversa the
+// rational number of a continued fraction: these are
+// respectively the programs
+// ContFrac: for 0<s<1, the continued fraction of 1/s,
 // RatNum: computes 1/s from the continued fraction.
 
 ContFrac:=function(s)
@@ -203,6 +237,8 @@ Checks := function(pairsofseqs, gr)
   return true;
 end function;
 
+// only takes sequences of length 3 as input
+
 Pi1:=function(seq1,seq2, G) /* the arguments are sequences of elements of the monodromy group G */
 T1:=PolyGroup(seq1); T2,f2:=PolyGroup(seq2); G:=Parent(seq1[1]);
 T1xT2:=DirectProduct(T1,T2);
@@ -369,6 +405,27 @@ DiagonalFormNumber := function(pairofseqs, G)
     end for;
     
     return 2*ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - kTot - singConditions;
+end function;
+
+HodgeDiamond := function(pairofseqs, G)
+    ord1 := [Order(g) : g in pairofseqs[1]];
+    ord2 := [Order(g) : g in pairofseqs[2]];
+    totalBasket, lTot, eTot, kTot := ComputeBasket(pairofseqs[1], pairofseqs[2], G);
+    K2 := 2*ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - kTot;
+    Segre := ChiCurve(ord1, Order(G))*ChiCurve(ord2, Order(G))/Order(G) - eTot - kTot;
+    c2 := (K2 - Segre);
+    chiO := (K2 + c2)/12; // Noether's formula
+    q := 0; // iregularity zero by assumption
+    h20 := chiO - 1; // use euler characteristic of O_X 
+    h11 := c2 - 2 - 2 * h20; // the sum of the cohomology is the topological euler characteristic;
+    print"\n";
+    print " "," ","1";
+    print " ","0", " ", "0";
+    print h20, " ", h11, " ", h20;
+    print " ","0", " ", "0";
+    print " "," ","1";
+    print"\n";
+    return h20, h11;
 end function;
 
 runData := function(G, seq1, seq2)

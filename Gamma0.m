@@ -1,6 +1,32 @@
-// In this file we verify that certain "conjugated" Shimura curves at level Gamma_0(p_13^2) have the correct genera 
+/*******************************************************************************
+ * Gamma0.m
+ *
+ * Purpose:
+ *   Verify that "conjugated" Shimura curves at level Gamma_0(13^2) have the
+ *   correct genera. This is related to studying modular curves and their
+ *   quotients by Borel subgroups.
+ *
+ * Method:
+ *   1. Construct PSL(2, Z/169Z) as the appropriate level structure group
+ *   2. Create the Borel-Unipotent subgroup BU (upper triangular mod 13)
+ *   3. Find spherical generators (2,3,7)-triple generating the full group
+ *   4. Compute genus of the curve and the intermediate extension via BU
+ *
+ * Output:
+ *   - Genus of the full Shimura curve
+ *   - Genus of the quotient by Borel-Unipotent subgroup
+ *
+ * Dependencies:
+ *   - intermediate_extensions.m: GenusIntermediateExtension, Genus, etc.
+ *
+ * Note:
+ *   Includes optional data caching via loadComputedData/saveComputedData
+ *   to avoid expensive recomputation.
+ ******************************************************************************/
 
-import "intermediate_extensions.m": GenusIntermediateExtension, Genus, 
+// In this file we verify that certain "conjugated" Shimura curves at level Gamma_0(p_13^2) have the correct genera
+
+import "intermediate_extensions.m": GenusIntermediateExtension, Genus,
     IntermediateMonodromy, GetMonodromyIntermediateExtension;
 
 // Create the group PSL(2, Z/13^2Z)

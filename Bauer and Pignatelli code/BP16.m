@@ -1,3 +1,5 @@
+// Code for paper "PRODUCT-QUOTIENT SURFACES: NEW INVARIANTS AND ALGORITHMS"
+
 // We are looking for regular product-quotient surfaces.
 
 // Three main inputs: pg, gamma and M. 

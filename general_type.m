@@ -1,4 +1,5 @@
 load "invariants.m";
+import "intermediate_extensions.m": Genus, GenusIntermediateExtension;
 
 // ---------------------------------------------------------------------------
 // Run over all pairs of sequences of elements of G whose product is 1,
@@ -17,20 +18,25 @@ AllSeqsProductOne := function(G, n : include_identity := true)
 
     elems := [G | g : g in G];
     if not include_identity then
-        elems := [g : g in elems | g ne Id(G)];
+        elems := [g : g in elems | g ne Id(G)]; 
     end if;
 
     if n eq 1 then
-        return [PowerSequence(G) | [Id(G)]];
+        if include_identity then
+            return [* [G | Id(G)] *];
+        end if;
+        return [* *];
     end if;
 
-    seqs := [PowerSequence(G) | ];
+    seqs := [* *];
 
     procedure rec(prefix, prod, ~seqs)
         if #prefix eq n - 1 then
             last := prod^(-1);
             if include_identity or last ne Id(G) then
-                Append(~seqs, prefix cat [PowerSequence(G) | last]);
+                new_seq := prefix;
+                Append(~new_seq, last);
+                Append(~seqs, new_seq);
             end if;
             return;
         end if;
@@ -42,7 +48,7 @@ AllSeqsProductOne := function(G, n : include_identity := true)
         end for;
     end procedure;
 
-    rec([PowerSequence(G) | ], Id(G), ~seqs);
+    rec([G | ], Id(G), ~seqs);
     return seqs;
 end function;
 
@@ -95,23 +101,58 @@ end function;
 PairK2Record := recformat<
     seq1: SeqEnum,
     seq2: SeqEnum,
+    genus1: RngIntElt,
+    genus2: RngIntElt,
     K2: FldRatElt
 >;
 
 // Iterate over all pairs (seq1, seq2) with product 1 and compute K2.
 // Returns a list of records with fields `seq1`, `seq2`, `K2`.
-// If only_negative is true, we keep only those with K2 < 0.
-AllPairsSeqsProductOneK2 := function(G, n1, n2 : include_identity := true, print_every := 0, only_negative := false)
-    seqs1 := AllSeqsProductOne(G, n1 : include_identity := include_identity);
-    seqs2 := AllSeqsProductOne(G, n2 : include_identity := include_identity);
+// If only_negative is true, we keep only those with K2 <= 0.
+AllPairsSeqsProductOneK2 := function(
+    G,
+    n1,
+    n2 : include_identity := true,
+    print_every := 0,
+    only_negative := false,
+    min_genus := 0
+)
+    raw_seqs1 := AllSeqsProductOne(G, n1 : include_identity := include_identity);
+    raw_seqs2 := AllSeqsProductOne(G, n2 : include_identity := include_identity);
+
+    seqs1 := [* *];
+    for s in raw_seqs1 do
+        if sub<G | s> ne G then
+            continue;
+        end if;
+        g1 := Integers()!Genus(G, s);
+        if g1 ge min_genus then
+            Append(~seqs1, <s, g1>);
+        end if;
+    end for;
+
+    seqs2 := [* *];
+    for s in raw_seqs2 do
+        if sub<G | s> ne G then
+            continue;
+        end if;
+        g2 := Integers()!Genus(G, s);
+        if g2 ge min_genus then
+            Append(~seqs2, <s, g2>);
+        end if;
+    end for;
 
     elems := [g : g in G];
-    seen := AssociativeArray(MonStgElt);
+    seen := AssociativeArray();
 
     results := [];
     ctr := 0;
-    for s1 in seqs1 do
-        for s2 in seqs2 do
+    for s1rec in seqs1 do
+        s1 := s1rec[1];
+        g1 := s1rec[2];
+        for s2rec in seqs2 do
+            s2 := s2rec[1];
+            g2 := s2rec[2];
             ctr +:= 1;
             if print_every gt 0 and (ctr mod print_every) eq 0 then
                 print "Processed pairs:", ctr;
@@ -129,10 +170,12 @@ AllPairsSeqsProductOneK2 := function(G, n1, n2 : include_identity := true, print
             seen[key] := true;
 
             k2val := K2([s1, s2], G);
-            if (not only_negative) or k2val lt 0 then
+            if (not only_negative) or k2val le 0 then
                 Append(~results, rec<PairK2Record |
                     seq1 := s1,
                     seq2 := s2,
+                    genus1 := g1,
+                    genus2 := g2,
                     K2 := k2val
                 >);
             end if;
@@ -146,18 +189,44 @@ end function;
 // Parameters + run
 // -----------------------
 
-G := CyclicGroup(3);
-n1 := 3;
-n2 := 3;
-
+G := SymmetricGroup(3);
+for n1 in [1..5] do
+    for n2 in [1..5] do
 // Collect only those pairs with K2 < 0
-results := AllPairsSeqsProductOneK2(G, n1, n2 : include_identity := true, print_every := 1000, only_negative := true);
-print "#pairs with K2 < 0 =", #results;
+min_genus := 3;
+results := AllPairsSeqsProductOneK2(
+    G,
+    n1,
+    n2 : include_identity := false,
+    print_every := 1000,
+    only_negative := true,
+    min_genus := min_genus
+);
+print "#pairs with nonpositive K2 =", #results;
 
 // Example: print the first few negative K2 values and their sequences
-for i in [1..Minimum(10, #results)] do
+for i in [1..Minimum(100, #results)] do
     print "index:", i;
+    print "genus of seq1:", results[i]`genus1;
+    print "genus of seq2:", results[i]`genus2;
     print "seq1:", results[i]`seq1;
     print "seq2:", results[i]`seq2;
+    // Compute and print Hodge diamond for the pair (seq1, seq2)
     print "K2:", results[i]`K2;
+    print HodgeDiamond([results[i]`seq1, results[i]`seq2], G);
+    print ComputeBasket(results[i]`seq1, results[i]`seq2, G);
+H := Subgroups(G);
+print "Subgroups and genus of intermediate extension:";
+for sub in H do
+    H_sub := sub`subgroup;
+    // Compute intermediate extension genus if possible
+    // For each result, consider the subgroup H_sub as intermediate cover
+        genus_intermediate := GenusIntermediateExtension(
+            G, results[i]`seq1, H_sub
+        );
+    print "Index:", i, "Subgroup:", H_sub, "Genus(intermediate):", genus_intermediate;
+end for;
+end for;
+
+end for;
 end for;

@@ -1,3 +1,36 @@
+/*******************************************************************************
+ * hilbert_modular_forms.m
+ *
+ * Purpose:
+ *   Hilbert modular form data for computing j-invariants of elliptic curve
+ *   factors in Jacobians. Contains Hecke eigenvalue data for a specific HMF
+ *   and functions to find the corresponding elliptic curves.
+ *
+ * Data provided:
+ *   - Base field: F = Q[w] where w^3 - w^2 - 2w + 1 = 0 (totally real cubic)
+ *   - Level: NN = ideal of norm 169 in F
+ *   - Ray class field K over F
+ *   - Hecke eigenvalues at primes up to norm ~1000
+ *   - Atkin-Lehner eigenvalues
+ *
+ * Main functions:
+ *   - compute_elliptic_curve(): Search for elliptic curves matching HMF data
+ *   - find_supersingular_prime(D, K, jE, BadPrimes): Elkies method for SS primes
+ *   - find_minimal_supersingular_prime(Kabs, E, badPrimes): Find smallest SS prime
+ *   - print_traces(E1, E2, bound): Compare Frobenius traces for two curves
+ *
+ * Dependencies:
+ *   None (data file, can be loaded standalone)
+ *
+ * Usage:
+ *   load "hilbert_modular_forms.m";
+ *   curves := compute_elliptic_curve();
+ *
+ * Note:
+ *   This code can be loaded into Magma directly. The computation to
+ *   reconstruct the Hilbert modular form is computationally intensive.
+ ******************************************************************************/
+
 /*
   This code can be loaded, or copied and pasted, into Magma.
   It will load the data associated to the HMF, including
@@ -215,12 +248,6 @@ function compute_elliptic_curve()
   print "To reconstruct the Hilbert newform f, type
     f, iso := Explode(make_newform());";
 
-  function make_newform();
-  M := HilbertCuspForms(F, NN);
-  S := NewSubspace(M);
-  // SetVerbose("ModFrmHil", 1);
-  NFD := NewformDecomposition(S);
-  newforms := [* Eigenform(U) : U in NFD *];
 
   if #newforms eq 0 then;
     print "No Hilbert newforms at this level";

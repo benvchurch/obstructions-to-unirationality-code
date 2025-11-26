@@ -1,3 +1,36 @@
+/*******************************************************************************
+ * subgroups.m
+ *
+ * Purpose:
+ *   Generate LaTeX diagrams of subgroup lattices using GraphViz and dot2tex.
+ *   Creates publication-quality Hasse diagrams showing the subgroup structure
+ *   of a finite group, with customizable labels (group names, genera, etc.)
+ *
+ * Main functions:
+ *   - CreateSubgroupLatticeLaTeX(G : labels, output_prefix): Generate lattice diagram
+ *
+ * Output files (in diagrams/ subdirectory):
+ *   - {output_prefix}_graphviz.txt: GraphViz source
+ *   - {output_prefix}_raw.tex: Raw LaTeX from dot2tex
+ *   - {output_prefix}.tex: Final LaTeX with proper labels
+ *   - {output_prefix}.pdf: Compiled PDF
+ *   - {output_prefix}_graphviz.pdf: Direct GraphViz PDF
+ *
+ * Dependencies:
+ *   - External: dot (GraphViz), dot2tex, pdflatex
+ *   - intermediate_extensions.m: GenusIntermediateExtension (for genus labels)
+ *   - group_reps.m: FindBelyiCurve (in examples)
+ *
+ * Usage:
+ *   output_file := CreateSubgroupLatticeLaTeX(G);
+ *   // With custom labels (e.g., genera of intermediate curves):
+ *   output_file := CreateSubgroupLatticeLaTeX(G : labels := genera,
+ *                                             output_prefix := "lattice_genera");
+ *
+ * Note:
+ *   Subscript numbers show the number of conjugates of each subgroup.
+ ******************************************************************************/
+
 // Single function that creates GraphViz code with placeholders, converts to LaTeX, then replaces labels
 CreateSubgroupLatticeLaTeX := function(G : labels := [], output_prefix := "subgroup_lattice")
     // Create diagrams directory if it doesn't exist
@@ -133,6 +166,39 @@ CreateSubgroupLatticeLaTeX := function(G : labels := [], output_prefix := "subgr
     return final_tex_file;
 end function;
 
+S := SymmetricGroup(14);
+P := S!(1, 13, 2, 11, 4, 5, 8)(3, 10, 6, 14, 7, 9, 12);
+Q := S!(1, 7, 3, 4)(2, 11, 13, 9, 6, 14, 10, 5);
+
+G := sub<S | P,Q>;
+// Example usage
+output_file := CreateSubgroupLatticeLaTeX(G);
+printf "Generated LaTeX file: %o\n", output_file;
+
+U := P^2*Q;
+T := P^3*Q;
+seq := [U,T,(U*T)^(-1)];
+
+subgroups := [Subgroups(G)[i]`subgroup : i in [1..#Subgroups(G)]];
+
+genera := [];
+
+for i in [1..#subgroups] do
+    H := subgroups[i];
+    Append(~genera, GenusIntermediateExtension(G, seq, H));
+end for; 
+
+output_file := CreateSubgroupLatticeLaTeX(G : labels := genera, output_prefix := "subgroup_lattice_genera");
+printf "Generated LaTeX file: %o\n", output_file;
+
+output_file := CreateSubgroupLatticeLaTeX(G : labels := [1..#subgroups], output_prefix := "subgroup_lattice_ordered");
+printf "Generated LaTeX file: %o\n", output_file;
+
+
+
+
+if false then
+
 G := SmallGroup(1092,25);
 
 // Example usage
@@ -162,3 +228,5 @@ printf "Generated LaTeX file: %o\n", output_file;
 group_names := ["C_1", "C_2", "C_3", "C_7", "C_{13}", "C_2^2", "S_3", "C_6", "S_3", "D_{7}", "D_{13} ", "C_{13}\\rtimes C_3", "D_{6}", "A_4", "C_{13}\\rtimes C_6", "\\mathrm{PSL}_2(\\mathbb{F}_{13})"];
 output_file := CreateSubgroupLatticeLaTeX(G : labels := group_names, output_prefix := "subgroup_lattice_group_names");
 printf "Generated LaTeX file: %o\n", output_file; 
+
+end if;

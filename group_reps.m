@@ -1,5 +1,38 @@
+/*******************************************************************************
+ * group_reps.m
+ *
+ * Purpose:
+ *   Group representation computations for studying Jacobians of curves via
+ *   their decomposition into simple abelian varieties. Includes functions
+ *   for finding Belyi curves and computing rational cohomology decompositions.
+ *
+ * Main functions:
+ *   - computeRationalCohomology(G, seq): Q-decomposition of cohomology representation
+ *   - computeGroupRingDecomposition(G): Analyze group ring structure
+ *   - FindBelyiCurve(G, conj, genus): Find G-cover of P^1 with given ramification
+ *   - FindBelyiCurveOrders(G, orders): Find Belyi curve with specified orders
+ *   - SphGensUptoConj(G, conj): Spherical generators up to conjugation
+ *   - SphGensUptoHurwitz(G, conj): Spherical generators up to Hurwitz moves
+ *   - SphGensUptoAut(G, conj): Spherical generators up to automorphisms
+ *   - HurwitzMove, HurwitzOrbit: Hurwitz equivalence computations
+ *   - RationalityField(G, conj): Field of definition for a curve
+ *   - ActionOfCyclotomicField: Galois action on spherical generators
+ *   - SimultaneouslyConjugate: Check if sequences are simultaneously conjugate
+ *
+ * Dependencies:
+ *   - intermediate_extensions.m: GenusIntermediateExtension, Genus, etc.
+ *
+ * Usage:
+ *   import "group_reps.m": FindBelyiCurve, computeRationalCohomology;
+ *
+ * Mathematical background:
+ *   For a G-Galois cover C -> P^1 with ramification data, the Jacobian Jac(C)
+ *   decomposes as a sum of abelian varieties corresponding to Q-irreducible
+ *   representations of G. This file computes such decompositions.
+ ******************************************************************************/
+
 // Import intermediate extension functionality
-import "intermediate_extensions.m": GenusIntermediateExtension, Genus, 
+import "intermediate_extensions.m": GenusIntermediateExtension, Genus,
     IntermediateMonodromy, GetMonodromyIntermediateExtension;
 
 // computes the Q-decomposition of the representation of G on rational cohomology
@@ -13,7 +46,7 @@ getRam := function(cycle)
     return ram;
 end function;
 
-computeRationalCohomology := function(G, seq) // compute the decomposition of the representation of G on rational cohomology in terms of Q-irreps
+computeRationalCohomology := function(G, seq : returnMat := false) // compute the decomposition of the representation of G on rational cohomology in terms of Q-irreps
     K := Rationals();
     irreps := IrreducibleModules(G, K);
     mat := []; // matrix of the fixed dimensions
@@ -37,7 +70,11 @@ computeRationalCohomology := function(G, seq) // compute the decomposition of th
 
     v, ker := Solution(Transpose(mat), g);
     print "Ambiguity: ", not (Dimension(ker) eq 0);
-    return v;
+    if returnMat then
+        return v, mat;
+    else 
+        return v;
+    end if;
 end function;
 
 
@@ -62,6 +99,21 @@ for M in irreps do
 end for;
 */
 
+FindBelyiCurveOrders := function(G, orders) // finds a curve presented as a G-cover of P1 ramified at 3 points with the given orders and genus 
+    el_ord_1 := [g : g in G | Order(g) eq orders[1]];
+    el_ord_2 := [g : g in G | Order(g) eq orders[2]];
+    el_ord_3 := [g : g in G | Order(g) eq orders[3]];
+    for g1 in el_ord_1 do
+        for g2 in el_ord_2 do
+            for g3 in el_ord_3 do
+                if g1 * g2 * g3 eq Id(G) and Order(sub<G | g1, g2, g3>) eq Order(G) then
+                    return [g1, g2, g3];
+                end if;
+            end for;
+        end for;
+    end for;
+    return "FAIL";
+end function;
 
 
 FindBelyiCurve := function(G, conj, genus) // finds a curve presented as a G-cover of P1 ramified at 3 points with the given conjugacy classes and genus 

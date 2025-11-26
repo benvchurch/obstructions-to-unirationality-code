@@ -1,3 +1,35 @@
+/*******************************************************************************
+ * pi1_tests.m
+ *
+ * Purpose:
+ *   Multiple implementations and tests for computing fundamental groups of
+ *   product-quotient surfaces. Contains old, new, and modified versions.
+ *
+ * Functions:
+ *   - PolyGroup(seq): Create polygon group from spherical generators (5 elements)
+ *   - Pi1(seq1, seq2): Original Pi1 computation (hardcoded for 5 generators)
+ *   - Pi1Detailed(seq1, seq2): Returns detailed group structure information
+ *   - PolyGroup(seq, gr): Generalized polygon group (any length)
+ *   - DirProd(G1, G2): Direct product with explicit injection/projection maps
+ *   - MapProd(map1, map2): Product of two homomorphisms
+ *   - Pi1_v2(pairsofseqs, gr): Generalized Pi1 (any length sequences)
+ *   - Pi1_v2_modified: Variant without spherical product relation
+ *   - Pi1_v3: Version with input validation via Checks
+ *
+ * Test examples:
+ *   - DihedralGroup(6), DihedralGroup(7) examples
+ *   - AlternatingGroup(4) examples
+ *   - S8 subgroup example
+ *
+ * Dependencies:
+ *   - invariants.m: Checks function
+ *   - group_reps.m: SphGensUptoConj
+ *
+ * Note:
+ *   Contains multiple versions of the same computation for comparison and
+ *   testing purposes. The main version used elsewhere is MyPi1 in invariants.m.
+ ******************************************************************************/
+
 // Add these import statements at the beginning of the file
 import "invariants.m": Checks;
 import "group_reps.m": SphGensUptoConj;

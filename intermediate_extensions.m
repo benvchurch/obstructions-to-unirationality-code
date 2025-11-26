@@ -1,3 +1,30 @@
+/*******************************************************************************
+ * intermediate_extensions.m
+ *
+ * Purpose:
+ *   Compute properties of intermediate field extensions for Galois covers.
+ *   Given a G-cover C -> C/G and a subgroup H < G, computes the genus and
+ *   monodromy of intermediate covers C -> C/H -> C/G.
+ *
+ * Main functions:
+ *   - getRam(cycle): Ramification contribution from a permutation cycle
+ *   - GenusIntermediateExtension(G, seq, H): Genus of C/H given monodromy of C -> C/G
+ *   - Genus(G, seq): Genus of C (= GenusIntermediateExtension with H = {1})
+ *   - IntermediateMonodromy(G, seq, H): Compute monodromy for C -> C/H (genus 0 case)
+ *   - GetMonodromyIntermediateExtension: Monodromy of C/H -> C/HL for H < HL
+ *
+ * Dependencies:
+ *   - group_reps.m: SphGensUptoConj, SphGensUptoAut, SphGensUptoHurwitz
+ *
+ * Usage:
+ *   import "intermediate_extensions.m": GenusIntermediateExtension, Genus;
+ *
+ * Mathematical background:
+ *   The Riemann-Hurwitz formula gives: 2g(C/H) - 2 = [G:H](2g(C/G) - 2) + Ram
+ *   where Ram is the ramification contribution. This file implements these
+ *   computations using the permutation representation of G on cosets of H.
+ ******************************************************************************/
+
 // Functions for computing properties of intermediate field extensions
 
 import "group_reps.m": SphGensUptoConj, SphGensUptoAut, SphGensUptoHurwitz;

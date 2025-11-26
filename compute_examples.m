@@ -1,3 +1,35 @@
+/*******************************************************************************
+ * compute_examples.m
+ *
+ * Purpose:
+ *   Main example computation file for product-quotient surfaces. Tests various
+ *   curves and groups to find surfaces with interesting properties (trivial
+ *   fundamental group, positive diagonal form number, etc.)
+ *
+ * Main functions:
+ *   - runCyclic(a, b): Test cyclic group examples with primes in [a,b]
+ *   - analyze_sub_curves(G, seq1, seq2): Analyze quotients by all subgroups
+ *   - run_over_subgroups(G, seq): Iterate over subgroups, compute monodromy
+ *
+ * Examples included:
+ *   - Hurwitz curve of genus 17 (main example)
+ *   - Hurwitz curve of genus 14 (PSL(2,13))
+ *   - Fricke-Macbeath curve (genus 7)
+ *   - Accola-Maclachlan curves (genera 13, 15)
+ *   - Various dihedral group examples
+ *   - Max automorphism curves (genera 10, 13)
+ *   - SL(2,3) and SL(2,5) examples
+ *
+ * Dependencies:
+ *   - invariants.m: All surface invariant functions
+ *   - intermediate_extensions.m: Genus computations
+ *   - group_reps.m: FindBelyiCurve, SphGensUptoConj
+ *
+ * Usage:
+ *   load "compute_examples.m";
+ *   // Runs computations on Hurwitz curve of genus 17 by default
+ ******************************************************************************/
+
 load "invariants.m";
 import "intermediate_extensions.m": Genus, GenusIntermediateExtension, IntermediateMonodromy, IntermediateMonodromyTake2;
 
@@ -41,8 +73,8 @@ function run_over_subgroups(G, seq)
     for i in [1..#subgroups] do
         H := subgroups[i];
         if GenusIntermediateExtension(G, seq, H) eq 0 then
-            H_seq, G_seq := IntermediateMonodromy(G, seq, H);
-
+            H_seq_list, G_seq := IntermediateMonodromy(G, seq, H);
+            H_seq := H_seq_list[1];
             Hsub := sub<G | H_seq>;
             H_seq := [Hsub !h : h in H_seq | h ne Id(G)];
             print i, H_seq;
@@ -51,9 +83,116 @@ function run_over_subgroups(G, seq)
             runData(Hsub, H_seq, H_seq);
         end if;
     end for;
+    return 0;
 end function;
 
-import "group_reps.m" : FindBelyiCurve, SphGensUptoConj;
+import "group_reps.m" : FindBelyiCurve, FindBelyiCurveOrders, SphGensUptoConj, computeGroupRingDecomposition, computeRationalCohomology;
+
+// Hurwitz curve of genus 17 
+
+
+S := SymmetricGroup(14);
+P := S!(1, 13, 2, 11, 4, 5, 8)(3, 10, 6, 14, 7, 9, 12);
+Q := S!(1, 7, 3, 4)(2, 11, 13, 9, 6, 14, 10, 5);
+
+G := sub<S | P,Q>;
+U := P^2*Q;
+T := P^3*Q;
+seq := [U,T,(U*T)^(-1)];
+
+subgroups := [Subgroups(G)[i]`subgroup : i in [1..#Subgroups(G)]];
+
+for i in [1..#subgroups] do
+    H := subgroups[i];
+    print i, GenusIntermediateExtension(G, seq, H);
+end for; 
+
+v, mat :=computeRationalCohomology(G,seq : returnMat:=true);
+v;
+
+if false then
+
+computeGroupRingDecomposition(G);
+computeRationalCohomology(G,seq); // Jac C ~ E_0^3 x E^14 where E_0 is an elliptic curve with CM by Q(sqrt(-7))
+run_over_subgroups(G,seq);
+
+
+q := 13;
+n := 3;
+if (q mod n) ne 1 then
+    print "FAIL";
+end if;
+k := (PrimitiveRoot(q)^Floor((q - 1)/n)) mod q;
+
+G_fp := FPGroup< a, b | a^q, b^n, b^(-1)*a*b*a^(-k) >;
+G, phi := PCGroup(G_fp);
+
+// Now to get the images of a and b in the PCGroup:
+a_pc := phi(G_fp.1);
+b_pc := phi(G_fp.2);
+
+// Use a_pc and b_pc instead of G.1 and G.2
+seq := [a_pc, b_pc, (a_pc*b_pc)^(-1)];
+run_over_subgroups(G, seq);
+
+m := 6;
+d := 2^(m-1)-1;
+
+G_fp := FPGroup< a, b | a^(2^m), b^2, b*a*b*a^(-d) >;
+G, phi := PCGroup(G_fp);
+
+// Now to get the images of a and b in the PCGroup:
+a_pc := phi(G_fp.1);
+b_pc := phi(G_fp.2);
+
+// Use a_pc and b_pc instead of G.1 and G.2
+seq := [a_pc, b_pc, (a_pc*b_pc)^(-1)];
+run_over_subgroups(G, seq);
+
+G := SmallGroup(360,118);
+seq := FindBelyiCurveOrders(G, [2,4,5], 10);
+run_over_subgroups(G, seq);
+
+
+// test some example with automorphism group SL(2,5) in genus 14 with CM jacobian
+
+G := SL(2,5);
+seq := FindBelyiCurve(G, [3,4,5], 14);
+run_over_subgroups(G, seq);
+
+
+// test some dihedral examples, these have K3^2 = 0, are they elliptic? 
+
+G := DihedralGroup(1119);
+seq := [G.1, G.1, G.1, G.2, G.2, G.2, (G.1^3 * G.2)^(-1)];
+runData(G, seq, seq);
+HodgeDiamond([seq,seq], G);
+
+// test some dihedral examples, these have K3^2 = 0, are they elliptic? 
+
+G := DihedralGroup(113);
+seq := [G.1, G.1, G.2, (G.1^2 * G.2)^(-1)];
+runData(G, seq, seq);
+HodgeDiamond([seq,seq], G);
+
+// Hurwitz curve of genus 14
+G := SmallGroup(1092, 25);
+H := (Subgroups(G)[14])`subgroup; // good subgroups 10,13,14
+
+seq := [
+    G ! (1, 2)(3, 4)(5, 8)(6, 9)(7, 12)(13, 14),
+    G ! (1, 11, 8)(2, 9, 3)(4, 13, 6)(10, 14, 12),
+    G ! (1, 5, 8, 11, 2, 4, 9)(3, 6, 14, 10, 7, 12, 13)
+];
+
+HodgeDiamond([seq,seq], G);
+K2([seq,seq], G);
+
+H_seq, G_seq := IntermediateMonodromy(G, seq, H);
+
+HodgeDiamond([H_seq[1],H_seq[1]], H);
+K2([H_seq[1],H_seq[1]], H);
+
 
 // Hurwitz curve of genus 14
 G := SmallGroups(1092)[25];
@@ -73,16 +212,6 @@ for rep1 in reps do
     end for;
 end for;
 
-
-if false then
-
-GenusIntermediateExtension(G, seq, H);
-Genus(H, H_seq);
-Genus(H, [h : h in H_seq | h ne Id(H)]);
-
-
-reps, G_seq := IntermediateMonodromy(G, seq, H);
-# reps;
 
 // 	Fricke-Macbeath curve
 
@@ -258,4 +387,5 @@ seq1 := [x1,x2,x3];
 seq2 := [x1,x2,x3]; 
 
 runData(G, seq1, seq1);
+
 end if;

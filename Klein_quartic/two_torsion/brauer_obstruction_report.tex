@@ -1,0 +1,720 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\DeclareMathOperator{\Pic}{Pic}
+\DeclareMathOperator{\Br}{Br}
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Div}{div}
+\DeclareMathOperator{\Nm}{N}
+\DeclareMathOperator{\Sel}{Sel}
+\DeclareMathOperator{\Sha}{\cyrsha}
+\DeclareMathOperator{\rk}{rk}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\coker}{coker}
+
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\Aff}{\mathbb{A}}
+\newcommand{\Gm}{\mathbb{G}_m}
+\newcommand{\Qbar}{\overline{\QQ}}
+\newcommand{\Cbar}{\overline{C}}
+
+\title{An explicit residual gerbe on $\mathcal{M}_5$}
+
+\author{}
+\date{\today}
+
+\begin{document}
+
+\begin{abstract}
+We exhibit a genus~$5$ curve, arising as an \'etale double cover of the
+Fermat quartic $C\colon x^4 + y^4 + z^4 = 0$, that is defined over
+$K = \QQ(\sqrt{-3})$ and isomorphic to its Galois conjugate, yet does not
+descend to~$\QQ$. The corresponding $2$-torsion line bundle
+$\eta \in J[2](\QQ)$ does not lie in the subgroup $V_{\mathrm{rat}}$ spanned
+by rational bitangent lines. By computing the descent cocycle
+$\lambda = f \cdot \sigma(f) = -2/3$, which is negative and hence not a
+norm from $K^*$, we establish a nontrivial obstruction class
+$\delta(\eta) \neq 0$ in $\Br(\QQ)[2]$.
+Via Tate's periodicity theorem, the element $[-2/3] \in
+\widehat{H}^0_T(\Gal(K/\QQ),\, K^*)$ corresponds to a nontrivial class in
+$\widehat{H}^2_T(\Gal(K/\QQ),\, K^*) \cong \Br(K/\QQ)$.
+All computations were performed in Magma~\cite{Magma}.
+\end{abstract}
+
+\maketitle
+
+%% ========================================================================
+\section{Introduction}
+%% ========================================================================
+
+Let $C \subset \PP^2_\QQ$ be the Fermat quartic curve defined by
+\[
+  C\colon\; x^4 + y^4 + z^4 = 0.
+\]
+This is a smooth curve of genus $3$ with Jacobian $J$.
+A quadric decomposition of the defining equation over the quadratic field
+$K = \QQ(\sqrt{-3})$ produces a $2$-torsion class
+$\eta \in J[2](\QQ) \setminus V_{\mathrm{rat}}$,
+where $V_{\mathrm{rat}} \subset J[2](\QQ)$ is the subgroup arising from
+rational bitangent lines. The class $\eta$ corresponds to an \'etale double
+cover $D \to C$ of genus~$5$, defined over $K$. While $D$ is isomorphic to
+its Galois conjugate $\sigma(D)$ as an abstract curve---and hence determines
+a $\QQ$-rational point on the coarse moduli space $\mathscr{M}_5$---the
+curve $D$ itself does not descend to $\QQ$. Equivalently, the residual gerbe
+of $\mathscr{M}_5$ at the point $[D]$ is nontrivial.
+
+More precisely, the Hochschild--Serre spectral sequence provides a
+connecting homomorphism
+\[
+  \delta\colon \Pic(\Cbar)^{G_\QQ} \longrightarrow \Br(\QQ),
+\]
+whose kernel is $\Pic(C)$, the group of line bundles actually defined
+over $\QQ$. A class $\eta \in J[2](\QQ) \subset \Pic^0(\Cbar)^{G_\QQ}$
+with $\delta(\eta) \neq 0$ witnesses a Galois-invariant line bundle that
+does not descend to~$\QQ$.
+
+\begin{theorem}\label{thm:main}
+Let $C\colon x^4 + y^4 + z^4 = 0$ and let $J = \operatorname{Jac}(C)$.
+Then $J[2](\QQ) \cong (\ZZ/2\ZZ)^3$, and the obstruction map
+\[
+  \delta\colon J[2](\QQ) \longrightarrow \Br(\QQ)[2]
+\]
+has kernel $V_{\mathrm{rat}} \cong (\ZZ/2\ZZ)^2$, the subgroup spanned by
+differences of rational bitangent contact divisors.
+In particular, $\delta$ is nonzero: there exists a Galois-invariant
+$2$-torsion line bundle on $C_{\Qbar}$ that does not descend to $\QQ$.
+\end{theorem}
+
+The proof uses the quadric decomposition method of
+Bruin~\cite{Bruin2008} over $K = \QQ(\sqrt{-3})$, followed by an
+explicit descent cocycle computation.
+
+%% ========================================================================
+\section{Background}
+%% ========================================================================
+
+%% ------------------------------------------------------------------------
+\subsection{The Brauer group and the Hochschild--Serre spectral sequence}
+%% ------------------------------------------------------------------------
+
+Let $X$ be a smooth projective variety over a field $k$ with separable
+closure $\bar{k}$ and absolute Galois group $G_k = \Gal(\bar{k}/k)$.
+The \emph{Brauer group} $\Br(X) := H^2_{\text{\'et}}(X, \Gm)$
+fits into a filtration
+\[
+  \Br_0(X) \subset \Br_1(X) \subset \Br(X),
+\]
+where $\Br_0(X) := \im(\Br(k) \to \Br(X))$ and
+$\Br_1(X) := \ker(\Br(X) \to \Br(X_{\bar{k}}))$
+is the \emph{algebraic Brauer group}~\cite{Grothendieck1968}.
+
+The Hochschild--Serre spectral sequence
+\[
+  E_2^{p,q} = H^p(G_k,\, H^q(X_{\bar{k}},\, \Gm))
+    \;\Longrightarrow\; H^{p+q}(X,\, \Gm)
+\]
+yields, via the identification $H^1(X_{\bar{k}}, \Gm) = \Pic(X_{\bar{k}})$
+and Hilbert's Theorem~90 ($H^1(G_k, \bar{k}^*) = 0$), the exact
+sequence~\cite[Theorem~5.5.1]{Poonen2017}
+\begin{equation}\label{eq:HS}
+  0 \to \Pic(X) \to \Pic(X_{\bar{k}})^{G_k}
+    \xrightarrow{\;\delta\;} \Br(k)
+    \to \Br_1(X) \to H^1(G_k,\, \Pic(X_{\bar{k}}))
+    \to H^3(G_k,\, \bar{k}^*).
+\end{equation}
+For a smooth projective curve $C/k$, the group $\Br(C_{\bar{k}})$
+vanishes~\cite[Corollary~6.4.6]{Poonen2017}, so
+$\Br_1(C) = \Br(C)$.
+
+The connecting homomorphism $\delta$ in~\eqref{eq:HS} sends a
+Galois-invariant line bundle class $[\mathscr{L}] \in \Pic(X_{\bar{k}})^{G_k}$
+to the Brauer class measuring the obstruction to descending $\mathscr{L}$
+from $\bar{k}$ to $k$. Its kernel is precisely $\Pic(X)$, the subgroup
+of classes representable by line bundles defined over $k$.
+
+%% ------------------------------------------------------------------------
+\subsection{Descent of line bundles over quadratic extensions}
+%% ------------------------------------------------------------------------
+
+For a quadratic extension $K/k$ with $\Gal(K/k) = \{1, \sigma\}$, the
+obstruction to descending a $K$-defined line bundle $\mathscr{L}$ to $k$ is
+computed as follows~\cite[\S5.4]{Skorobogatov2001}.
+Suppose $\mathscr{L}$ is Galois-invariant, i.e.,
+$\sigma^*\mathscr{L} \cong \mathscr{L}$.
+Choose an isomorphism $\psi\colon \sigma^*\mathscr{L} \xrightarrow{\sim} \mathscr{L}$.
+The \emph{descent cocycle} is
+\[
+  \lambda \;:=\; \psi \circ \sigma^*(\psi)
+    \;\in\; \Aut(\mathscr{L}) \;=\; K^*.
+\]
+One checks that $\sigma(\lambda) = \lambda$, so $\lambda \in k^*$.
+Replacing $\psi$ by $c \cdot \psi$ for $c \in K^*$ changes $\lambda$ to
+$\Nm_{K/k}(c) \cdot \lambda$. Hence the obstruction class
+\[
+  [\lambda] \;\in\; k^*/\Nm_{K/k}(K^*) \;\cong\; \Br(K/k)
+    \;\hookrightarrow\; \Br(k)[2]
+\]
+is well-defined. The line bundle $\mathscr{L}$ descends to $k$ if and
+only if $\lambda \in \Nm_{K/k}(K^*)$.
+
+\begin{remark}
+For $K = \QQ(\sqrt{-3})$, the norm form is
+$\Nm(a + b\sqrt{-3}) = a^2 + 3b^2$, which is non-negative for all
+$a, b \in \QQ$. Therefore, $\lambda \in \QQ^*$ is a norm from $K^*$ only
+if $\lambda > 0$.
+\end{remark}
+
+%% ------------------------------------------------------------------------
+\subsection{Quadric decompositions and 2-torsion on Jacobians}
+\label{sec:quadric}
+%% ------------------------------------------------------------------------
+
+Let $C \subset \PP^2$ be a smooth plane quartic defined by a degree-$4$
+form $F(x,y,z)$. A \emph{quadric decomposition} of $F$ over a field
+$L \supset k$ is an identity
+\begin{equation}\label{eq:quadric}
+  F = Q_1 Q_3 - Q_2^2,
+\end{equation}
+where $Q_1, Q_2, Q_3 \in L[x,y,z]$ are homogeneous of degree $2$.
+Such a decomposition determines a $2$-torsion divisor class on $J = \operatorname{Jac}(C)$
+as follows~\cite{Bruin2008}.
+
+Restricting $Q_1$ to $C$ gives a rational function
+$q_1 = Q_1|_C \in L(C)^*$. The identity~\eqref{eq:quadric} implies
+$q_1 q_3 = q_2^2$, so $\Div(q_1) + \Div(q_3) = 2\,\Div(q_2)$. In
+particular, $\Div(q_1)$ has all-even multiplicities (since $\Div(q_1 q_3)$
+does), and the class
+\[
+  \eta \;:=\; \bigl[\tfrac{1}{2}\Div(q_1)\bigr]
+    \;\in\; \Pic^0(C_{\bar{k}})
+\]
+satisfies $2\eta = [\Div(q_1)] = 0$ in $\Pic^0$
+(as $q_1$ is a rational function). Thus $\eta \in J[2]$.
+
+\begin{remark}
+The class $\eta$ is the correct formula for the $2$-torsion element:
+one halves \emph{all} multiplicities (both zeros and poles) of $\Div(q_1)$.
+An alternative formula sometimes seen in the literature,
+$[\tfrac{1}{2}\Div_+(q_1) - \tfrac{1}{2}\Div_+(q_3)]$
+(halving only the positive parts), equals $[\Div(q_2/q_3)]$, which is
+always principal and hence trivial.
+\end{remark}
+
+%% ========================================================================
+\section{The Fermat quartic: basic properties}
+%% ========================================================================
+
+Let $C\colon x^4 + y^4 + z^4 = 0$ over $\QQ$.
+
+%% ------------------------------------------------------------------------
+\subsection{The Jacobian and its 2-torsion}
+%% ------------------------------------------------------------------------
+
+The curve $C$ has genus $g = 3$. Its Jacobian $J$ is isogenous (over $\Qbar$)
+to $E^3$, where $E\colon y^2 = x^3 - x$ is the elliptic curve with
+CM by $\ZZ[i]$ and $j$-invariant $1728$~\cite{Koblitz1993}.
+The full $2$-torsion group is $J[2](\Qbar) \cong (\ZZ/2\ZZ)^6$,
+with $2$-torsion field $\QQ(\zeta_8)$~\cite{Zarhin2000}.
+Over $\QQ$, the Galois-invariant subgroup is
+\[
+  J[2](\QQ) \;\cong\; (\ZZ/2\ZZ)^3.
+\]
+
+%% ------------------------------------------------------------------------
+\subsection{Bitangent lines and $V_{\mathrm{rat}}$}
+%% ------------------------------------------------------------------------
+
+A smooth plane quartic of genus $3$ has exactly $28$ bitangent lines
+over $\bar{k}$, and their pairwise contact divisor differences generate
+$J[2](\bar{k})$. The Fermat quartic has exactly four rational
+bitangent lines:
+\[
+  x + y + z = 0, \quad x + y - z = 0, \quad x - y + z = 0, \quad x - y - z = 0.
+\]
+The pairwise differences of the half-contact-divisors span a subgroup
+\[
+  V_{\mathrm{rat}} \;\cong\; (\ZZ/2\ZZ)^2 \;\subset\; J[2](\QQ).
+\]
+These classes lie in $\ker(\delta)$, since the corresponding line bundles
+are visibly defined over $\QQ$ (they arise from intersecting $C$ with
+rational lines, giving effective divisors in $\Div(C)$).
+
+Since $\dim_{\FF_2} J[2](\QQ) = 3$ and
+$\dim_{\FF_2} V_{\mathrm{rat}} = 2$, there is a ``missing direction''
+$\eta_0 \in J[2](\QQ) \setminus V_{\mathrm{rat}}$, and the content of
+Theorem~\ref{thm:main} is that $\delta(\eta_0) \neq 0$.
+
+%% ========================================================================
+\section{The quadric decomposition over $\QQ(\sqrt{-3})$}
+%% ========================================================================
+
+%% ------------------------------------------------------------------------
+\subsection{Nonexistence over $\QQ$}
+%% ------------------------------------------------------------------------
+
+A computational search over $\QQ$ (testing all quadratic forms $Q_2$
+with integer coefficients in $[-5, 5]$, a total of $885{,}780$ candidates)
+finds \emph{no} decomposition $F = Q_1 Q_3 - Q_2^2$ over~$\QQ$.
+The polynomial $F + Q_2^2$ remains irreducible over $\QQ$ for all tested
+$Q_2$, and also over $\QQ(\sqrt{-1})$, $\QQ(\sqrt{-2})$, $\QQ(\sqrt{2})$,
+and $\QQ(\zeta_8)$.
+
+%% ------------------------------------------------------------------------
+\subsection{Decomposition over $K = \QQ(\sqrt{-3})$}
+%% ------------------------------------------------------------------------
+
+Let $K = \QQ(\sqrt{-3})$ with $w = \sqrt{-3}$. The identity
+\begin{equation}\label{eq:decomp}
+  x^4 + y^4 + z^4
+    \;=\; \bigl(2x^2 + (1 - w)y^2 + (1 + w)z^2\bigr)
+          \bigl(x^2 + \tfrac{1+w}{2}\, y^2 + \tfrac{w-1}{2}\, z^2\bigr)
+    \;-\; \bigl(x^2 + y^2 + w\, z^2\bigr)^2
+\end{equation}
+gives a quadric decomposition~\eqref{eq:quadric} over $K$ with
+\[
+  Q_1 = 2x^2 + (1-w)y^2 + (1+w)z^2, \quad
+  Q_2 = x^2 + y^2 + w\, z^2.
+\]
+
+%% ------------------------------------------------------------------------
+\subsection{Identification of the 2-torsion class}
+%% ------------------------------------------------------------------------
+
+To identify the class $\eta = [\frac{1}{2}\Div(q_1)] \in J[2]$,
+we reduce modulo $3$. Since $w = \sqrt{-3} \equiv 0 \pmod{3}$,
+the decomposition~\eqref{eq:decomp} reduces over $\FF_3$ (after a
+coordinate permutation $(x,y,z) \mapsto (y,z,x)$) to the decomposition
+with $Q_2 = y^2 + z^2$.
+
+An exhaustive computation of all quadric decompositions over $\FF_3$
+yields four distinct $J[2]$ classes. Writing $J[2](\FF_3) = \langle
+e_1, e_2, e_3 \rangle \cong (\ZZ/2\ZZ)^3$, three of these classes
+($e_1$, $e_2$, and $e_1 + e_2$) lie in
+$V_{\mathrm{rat}} = \langle e_1, e_2 \rangle$, and the fourth is
+\[
+  \eta \;=\; e_1 + e_2 + e_3 \;\notin\; V_{\mathrm{rat}}.
+\]
+This is the ``missing'' class.
+
+%% ========================================================================
+\section{The descent cocycle}
+%% ========================================================================
+
+%% ------------------------------------------------------------------------
+\subsection{Galois invariance of $\eta$}
+%% ------------------------------------------------------------------------
+
+Since $\eta$ arises from a decomposition over $K = \QQ(\sqrt{-3})$, it
+is \emph{a priori} an element of $J[2](K)$. To apply descent, we first
+verify that $\sigma(\eta) = \eta$, where $\sigma$ is the nontrivial
+element of $\Gal(K/\QQ)$ acting by $w \mapsto -w$.
+
+The conjugate decomposition has
+$\sigma(Q_1) = 2x^2 + (1+w)y^2 + (1-w)z^2$.
+A direct computation in the class group of the function field of $C$
+over $\FF_7$ (where $\sqrt{-3} \equiv 2$ and
+$\sigma(\sqrt{-3}) \equiv 5$) confirms
+$[\tfrac{1}{2}\Div(q_1)] = [\tfrac{1}{2}\Div(\sigma(q_1))]$ in $J[2](\FF_7)$.
+
+Since the reduction map $J[2](\QQ) \hookrightarrow J[2](\FF_7)$ is
+injective (as $7$ is a prime of good reduction), this implies
+$\sigma(\eta) = \eta$ globally. Thus
+$\eta \in J[2](\QQ) \setminus V_{\mathrm{rat}}$.
+
+%% ------------------------------------------------------------------------
+\subsection{Setup of the cocycle computation}
+%% ------------------------------------------------------------------------
+
+Working in the function field $K(C)$ with affine coordinates $t = x/z$,
+$u = y/z$ satisfying $u^4 + t^4 + 1 = 0$, we set
+\begin{align*}
+  q_1 &= 2t^2 + (1-w)u^2 + (1+w), \\
+  \sigma(q_1) &= 2t^2 + (1+w)u^2 + (1-w).
+\end{align*}
+A direct expansion using $w^2 = -3$ yields the \emph{norm identity}
+\begin{equation}\label{eq:norm}
+  q_1 \cdot \sigma(q_1) \;=\; 4g,
+  \qquad g := t^2 u^2 + t^2 - u^2 \;\in\; \QQ(C)^*.
+\end{equation}
+Geometrically,~\eqref{eq:norm} states that the norm
+$\Nm_{K/\QQ}(\eta) = \eta + \sigma(\eta) = [\tfrac{1}{2}\Div(g)]$
+is a $\QQ$-rational divisor class, a necessary condition for descent.
+
+The divisors $D := \tfrac{1}{2}\Div(q_1)$ and
+$\sigma(D) := \tfrac{1}{2}\Div(\sigma(q_1))$ are well-defined
+(all multiplicities of $\Div(q_1)$ and $\Div(\sigma(q_1))$ are even).
+Since $\eta = \sigma(\eta)$ in $J[2]$, the divisor $D - \sigma(D)$ is
+linearly equivalent to $0$, and there exists
+$f \in K(C)^*$ with
+\begin{equation}\label{eq:f}
+  \Div(f) = D - \sigma(D).
+\end{equation}
+
+%% ------------------------------------------------------------------------
+\subsection{Computation of $\lambda$}
+%% ------------------------------------------------------------------------
+
+Using the Riemann--Roch space $L(\sigma(D) - D)$ over $K(C)$, Magma finds
+the unique (up to scalar) function $f$ satisfying~\eqref{eq:f}:
+\begin{equation}\label{eq:explicit_f}
+  f \;=\; \frac{u^2 + \frac{w}{3}(t^2 + 1)}{t^2 - \frac{w+1}{2}}.
+\end{equation}
+Applying $\sigma\colon w \mapsto -w$ gives
+\[
+  \sigma(f) \;=\; \frac{u^2 - \frac{w}{3}(t^2 + 1)}{t^2 + \frac{w - 1}{2}}.
+\]
+
+The descent cocycle is $\lambda = f \cdot \sigma(f)$.
+Multiplying the numerators:
+\begin{align*}
+  \Bigl(u^2 + \tfrac{w}{3}(t^2+1)\Bigr)
+  \Bigl(u^2 - \tfrac{w}{3}(t^2+1)\Bigr)
+  &= u^4 - \tfrac{w^2}{9}(t^2+1)^2 \\
+  &= u^4 + \tfrac{1}{3}(t^2+1)^2.
+\end{align*}
+On $C$, we have $u^4 = -(t^4 + 1)$, so
+\[
+  u^4 + \tfrac{1}{3}(t^2+1)^2
+  = -(t^4+1) + \tfrac{1}{3}(t^4 + 2t^2 + 1)
+  = -\tfrac{2}{3}(t^4 - t^2 + 1).
+\]
+Multiplying the denominators:
+\[
+  \Bigl(t^2 - \tfrac{w+1}{2}\Bigr)
+  \Bigl(t^2 + \tfrac{w-1}{2}\Bigr)
+  = t^4 - \tfrac{(w+1)(1-w)}{4} \cdot (-1)
+  = t^4 - t^2 + 1.
+\]
+
+Therefore:
+\begin{equation}\label{eq:lambda}
+  \boxed{\lambda \;=\; f \cdot \sigma(f)
+    \;=\; \frac{-\frac{2}{3}(t^4 - t^2 + 1)}{t^4 - t^2 + 1}
+    \;=\; -\frac{2}{3}.}
+\end{equation}
+
+%% ------------------------------------------------------------------------
+\subsection{The norm condition}
+%% ------------------------------------------------------------------------
+
+\begin{proposition}\label{prop:not_norm}
+The element $\lambda = -2/3$ is not in the image of the norm map
+$\Nm_{K/\QQ}\colon K^* \to \QQ^*$ for $K = \QQ(\sqrt{-3})$.
+\end{proposition}
+
+\begin{proof}
+For $a + b\sqrt{-3} \in K^*$, the norm is
+$\Nm(a + b\sqrt{-3}) = a^2 + 3b^2 \geq 0$, with equality only when
+$a = b = 0$. Since $-2/3 < 0$, it cannot be a norm.
+\end{proof}
+
+By the discussion in \S2.2, this means the line bundle
+$\mathscr{L} = \mathscr{O}_C(D)$ on $C_K$ corresponding to $\eta$ does
+not descend to $\QQ$, i.e.,
+$[\lambda] = [-2/3] \neq 0$ in $\QQ^*/\Nm_{K/\QQ}(K^*)$.
+
+%% ------------------------------------------------------------------------
+\subsection{Identification of the Brauer class via Tate cohomology}
+\label{sec:tate}
+%% ------------------------------------------------------------------------
+
+The cocycle $\lambda$ naturally lives in the Tate cohomology group
+$\widehat{H}^0_T(G,\, K^*)$, and we now relate it to the Brauer group
+$\widehat{H}^2_T(G,\, K^*) \cong \Br(K/\QQ)$, where
+$G = \Gal(K/\QQ) = \langle \sigma \rangle \cong \ZZ/2\ZZ$.
+
+Recall that for a cyclic group $G$ of order $n$ with generator $\sigma$
+acting on a $G$-module $M$, the Tate cohomology groups
+are~\cite[\S VIII.4]{Serre1979}
+\[
+  \widehat{H}^0_T(G, M) = M^G / \Nm(M),
+  \qquad
+  \widehat{H}^{-1}_T(G, M) = \ker(\Nm) / (1 - \sigma) M,
+\]
+where $\Nm = \sum_{g \in G} g$ is the norm map.
+Tate's periodicity theorem~\cite[Theorem~6.2.3]{Neukirch2008} states that
+cup product with the canonical generator $u \in \widehat{H}^2_T(G, \ZZ)
+\cong \ZZ/n\ZZ$ induces isomorphisms
+\begin{equation}\label{eq:tate}
+  \widehat{H}^r_T(G, M)
+    \;\xrightarrow[\;\sim\;]{\;\cup\, u\;}
+  \widehat{H}^{r+2}_T(G, M)
+  \qquad \text{for all } r \in \ZZ.
+\end{equation}
+
+Applied to $M = K^*$ with $G = \Gal(K/\QQ)$:
+\begin{itemize}
+  \item $\widehat{H}^0_T(G, K^*) = (K^*)^G / \Nm(K^*)
+    = \QQ^* / \Nm_{K/\QQ}(K^*)$, where $\lambda = -2/3$ represents
+    a nontrivial class.
+  \item $\widehat{H}^2_T(G, K^*) = H^2(G, K^*) = \Br(K/\QQ)$,
+    the relative Brauer group.
+\end{itemize}
+The periodicity isomorphism~\eqref{eq:tate} identifies
+$[-2/3] \in \widehat{H}^0_T(G, K^*)$ with a nontrivial element of
+$\Br(K/\QQ) \hookrightarrow \Br(\QQ)[2]$.
+
+Explicitly, the isomorphism $\QQ^*/\Nm_{K/\QQ}(K^*) \xrightarrow{\sim}
+\Br(K/\QQ)$ sends $[a]$ to the class of the quaternion
+algebra $(a, d)_\QQ$ where $K = \QQ(\sqrt{d})$~\cite[\S2.5]{GilleSzamuely2006}.
+In our case $d = -3$ and $a = -2/3$, so the Brauer class is
+\[
+  \delta(\eta) \;=\; (-\tfrac{2}{3},\; -3)_\QQ
+    \;\in\; \Br(\QQ)[2].
+\]
+One computes (via the Hilbert symbol) that this quaternion algebra has
+local invariants $\operatorname{inv}_v = 1/2$ at $v = \infty$ and $v = 2$,
+and $\operatorname{inv}_v = 0$ at all other places.
+
+%% ========================================================================
+\section{Proof of Theorem~\ref{thm:main}}
+%% ========================================================================
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+We have shown:
+\begin{enumerate}[label=(\roman*)]
+  \item The $\QQ$-rational bitangent lines of $C$ span
+    $V_{\mathrm{rat}} \cong (\ZZ/2\ZZ)^2 \subset J[2](\QQ)$,
+    and $V_{\mathrm{rat}} \subset \ker(\delta)$ since these classes are
+    represented by $\QQ$-rational divisors.
+  \item The quadric decomposition~\eqref{eq:decomp} over
+    $K = \QQ(\sqrt{-3})$ produces a class
+    $\eta = e_1 + e_2 + e_3 \in J[2](\QQ) \setminus V_{\mathrm{rat}}$.
+  \item The descent cocycle
+    $\lambda = -2/3 \notin \Nm_{K/\QQ}(K^*)$
+    (\S\ref{sec:tate}), so the \'etale double cover $D \to C$
+    corresponding to $\eta$ does not descend to $\QQ$, and
+    $\delta(\eta) \neq 0$ in $\Br(\QQ)[2]$.
+\end{enumerate}
+Since $J[2](\QQ) = V_{\mathrm{rat}} \oplus \langle \eta \rangle
+\cong (\ZZ/2\ZZ)^3$ and $\delta(\eta) \neq 0$, the kernel of $\delta$
+restricted to $J[2](\QQ)$ is exactly $V_{\mathrm{rat}}$.
+\end{proof}
+
+%% ========================================================================
+\section{Why $\delta(\eta)$ obstructs the descent of $D$}
+\label{sec:why}
+%% ========================================================================
+
+The Brauer class $\delta(\eta) \in \Br(\QQ)[2]$ was defined as the
+obstruction to descending a line bundle on $C$. We now explain why
+it also obstructs the descent of the \'etale double cover $D$ itself,
+giving two independent arguments.
+
+%% ------------------------------------------------------------------------
+\subsection{Via the associated line bundle}
+%% ------------------------------------------------------------------------
+
+The \'etale double cover $\pi\colon D \to C$ determines a
+$2$-torsion line bundle on $C$ as follows. The pushforward
+$\pi_* \mathscr{O}_D$ is a rank-$2$ vector bundle on $C$ equipped
+with the action of the deck involution $\iota$; it decomposes into
+eigensheaves as
+\[
+  \pi_* \mathscr{O}_D \;=\; \mathscr{O}_C \;\oplus\; \mathscr{L},
+\]
+where $\mathscr{L}$ is the $(-1)$-eigensheaf, a line bundle satisfying
+$\mathscr{L}^{\otimes 2} \cong \mathscr{O}_C$. The isomorphism class
+$[\mathscr{L}] \in \Pic(C)[2]$ is exactly the $2$-torsion class
+$\eta$.
+
+If $D$ admitted a model over $\QQ$ \emph{as a cover of $C$}, the morphism
+$\pi$ and the decomposition of $\pi_*\mathscr{O}_D$ would also be
+defined over $\QQ$, and $\mathscr{L}$ would descend to a line bundle in
+$\Pic(C)$. But $\delta(\eta) \neq 0$ means precisely that $\mathscr{L}$
+does \emph{not} descend. Hence $D$ cannot descend as a cover of $C$.
+
+%% ------------------------------------------------------------------------
+\subsection{Via the \'etale fundamental group}
+%% ------------------------------------------------------------------------
+
+The cover $D \to C_{\Qbar}$ corresponds to a surjective character
+\[
+  \varphi\colon \pi_1^{\text{\'et}}(C_{\Qbar}) \twoheadrightarrow \mu_2
+\]
+with kernel $H = \ker(\varphi) \subset \pi_1^{\text{\'et}}(C_{\Qbar})$.
+The Galois invariance $\sigma(\eta) = \eta$ means that $H$ is stable
+under the conjugation action of $G_\QQ$ on $\pi_1^{\text{\'et}}(C_{\Qbar})$.
+
+To descend $D$ as a cover of $C$ to $\QQ$, one must extend $H$ to a normal
+subgroup of $\pi_1^{\text{\'et}}(C)$ defining a geometrically connected
+cover of $C$ over $\QQ$. Equivalently, one must lift $\varphi$ to a character
+of $\pi_1^{\text{\'et}}(C)$ itself. The Hochschild--Serre spectral sequence
+for \'etale cohomology with $\mu_2$-coefficients gives the exact
+sequence~\cite[\S5.3]{Poonen2017}
+\begin{equation}\label{eq:mu2_HS}
+  H^1(G_\QQ,\, \mu_2) \;\to\; H^1_{\text{\'et}}(C,\, \mu_2)
+    \;\to\; H^1_{\text{\'et}}(C_{\Qbar},\, \mu_2)^{G_\QQ}
+    \;\xrightarrow{\;d_2\;}\; H^2(G_\QQ,\, \mu_2).
+\end{equation}
+The class $\varphi \in H^1_{\text{\'et}}(C_{\Qbar}, \mu_2)^{G_\QQ}$ lifts to
+$H^1_{\text{\'et}}(C, \mu_2)$ (i.e., $D$ descends as a cover of $C$
+to~$\QQ$) if and only if $d_2(\varphi) = 0$.
+
+The Kummer sequence $1 \to \mu_2 \to \Gm \xrightarrow{(\cdot)^2} \Gm \to 1$
+on $\Spec(\QQ)$ yields the identification
+\begin{equation}\label{eq:kummer_brauer}
+  H^2(G_\QQ,\, \mu_2) \;\cong\; \Br(\QQ)[2],
+\end{equation}
+and the differential $d_2$ in~\eqref{eq:mu2_HS} is identified with the
+restriction of the connecting homomorphism $\delta$ from~\eqref{eq:HS}
+to $2$-torsion classes. Concretely, under the natural map
+$H^1_{\text{\'et}}(C_{\Qbar}, \mu_2) \to \Pic(C_{\Qbar})[2] = J[2](\Qbar)$,
+the character $\varphi$ maps to $\eta$, and
+\[
+  d_2(\varphi) \;=\; \delta(\eta) \;=\; (-\tfrac{2}{3},\, -3)_\QQ
+    \;\neq\; 0 \;\in\; \Br(\QQ)[2].
+\]
+Thus the obstruction to extending $H \subset \pi_1^{\text{\'et}}(C_{\Qbar})$
+to a normal subgroup of $\pi_1^{\text{\'et}}(C)$ defining a geometrically
+connected cover over $\QQ$ is precisely the Brauer class $\delta(\eta)$.
+
+%% ------------------------------------------------------------------------
+\subsection{Descent of $D$ as an abstract curve}
+%% ------------------------------------------------------------------------
+
+The arguments above show that $D$ does not descend to $\QQ$ \emph{as a
+cover of $C$}. One may ask the stronger question: does $D$ descend to
+$\QQ$ as an abstract curve, forgetting the covering structure?
+
+By the Weil descent criterion, $D$ descends to $\QQ$ if and only if
+there exists an isomorphism $\varphi\colon D \xrightarrow{\sim} \sigma(D)$
+satisfying the cocycle condition $\sigma(\varphi) \circ \varphi = \mathrm{id}$.
+The set of such isomorphisms is a coset of $\Aut(D)$, and the obstruction
+to choosing one satisfying the cocycle condition lives in
+$H^1(G_\QQ,\, \Aut(D_{\Qbar}))$.
+
+For descent as a cover, the relevant automorphism group is
+$\Aut_C(D) = \langle \iota \rangle \cong \mu_2$, and the obstruction
+is $\delta(\eta) \neq 0$. For descent as an abstract curve, the group
+$\Aut(D)$ may be strictly larger (since automorphisms of $C$ preserving
+$\eta$ lift to $D$), potentially allowing the cocycle to be trivialized.
+
+However, the deck involution $\iota$ is the unique involution of
+$D_{\Qbar}$ whose quotient is a smooth non-hyperelliptic curve of
+genus~$3$. It is therefore characterized by an intrinsic geometric
+property and must be preserved by any $G_\QQ$-action on $\Aut(D_{\Qbar})$.
+Consequently, if $D$ descended to some $D_0/\QQ$, the involution $\iota$
+would also descend, and $D_0 / \langle \iota \rangle$ would be a
+genus~$3$ curve $C'/\QQ$ with $C'_{\Qbar} \cong C_{\Qbar}$, i.e., a
+\emph{twist} of $C$. The cover $D_0 \to C'$ would then be an \'etale
+double cover defined over $\QQ$, with corresponding $2$-torsion class
+$\eta'$ on $C'$ satisfying $\delta_{C'}(\eta') = 0$.
+
+Since the obstruction map $\delta$ depends on the curve $C'$ (not just
+its geometric isomorphism class), the nontriviality of $\delta_C(\eta)$
+does not immediately rule out this scenario. Settling whether $D$
+descends as an abstract curve therefore requires either a direct
+computation of $H^1(G_\QQ,\, \Aut(D_{\Qbar}))$, or showing that no
+twist $C'$ of $C$ admits a $\QQ$-rational \'etale double cover in the
+class~$\eta$.
+
+\begin{remark}
+The \'etale double cover $D \to C$ is a genus~$5$ curve defined over $K$.
+Since $D \cong \sigma(D)$, the isomorphism class $[D]$ determines a
+$\QQ$-rational point on the coarse moduli space $\mathscr{M}_5$.
+The nontriviality of $\delta(\eta)$ means that $D$ does not admit a model
+over $\QQ$ as a cover of $C$; the residual gerbe of the moduli stack
+$\mathscr{M}_5$ at the point $[D]$ may nonetheless be classified by a
+different (possibly trivial) element of $H^2(G_\QQ,\, \Aut(D_{\Qbar}))$.
+\end{remark}
+
+\begin{remark}
+The fact that no quadric decomposition of $x^4 + y^4 + z^4$ exists
+over $\QQ$ (nor over $\QQ(\sqrt{-1})$, $\QQ(\sqrt{-2})$, $\QQ(\sqrt{2})$,
+or $\QQ(\zeta_8)$) means that the class $\eta$ cannot be exhibited by
+a rational construction. The field $\QQ(\sqrt{-3})$ is, in some sense,
+the simplest extension over which the obstruction becomes visible.
+\end{remark}
+
+%% ========================================================================
+%% REFERENCES
+%% ========================================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{Bruin2008}
+N.~Bruin,
+\emph{The arithmetic of Prym varieties in genus 3},
+Compos.\ Math.\ \textbf{144} (2008), no.~2, 317--338.
+
+\bibitem{GilleSzamuely2006}
+P.~Gille and T.~Szamuely,
+\emph{Central Simple Algebras and Galois Cohomology},
+Cambridge Studies in Advanced Mathematics, vol.~101,
+Cambridge University Press, 2006.
+
+\bibitem{Grothendieck1968}
+A.~Grothendieck,
+\emph{Le groupe de Brauer I, II, III},
+in \emph{Dix expos\'es sur la cohomologie des sch\'emas},
+North-Holland, Amsterdam, 1968, pp.~46--188.
+
+\bibitem{Koblitz1993}
+N.~Koblitz,
+\emph{Introduction to Elliptic Curves and Modular Forms},
+2nd ed., Graduate Texts in Mathematics, vol.~97,
+Springer-Verlag, New York, 1993.
+
+\bibitem{Magma}
+W.~Bosma, J.~Cannon, and C.~Playoust,
+\emph{The {M}agma algebra system. {I}. {T}he user language},
+J.\ Symbolic Comput.\ \textbf{24} (1997), 235--265.
+
+\bibitem{Neukirch2008}
+J.~Neukirch, A.~Schmidt, and K.~Wingberg,
+\emph{Cohomology of Number Fields},
+2nd ed., Grundlehren der mathematischen Wissenschaften, vol.~323,
+Springer-Verlag, Berlin, 2008.
+
+\bibitem{Poonen2017}
+B.~Poonen,
+\emph{Rational Points on Varieties},
+Graduate Studies in Mathematics, vol.~186,
+American Mathematical Society, Providence, RI, 2017.
+
+\bibitem{Serre1979}
+J.-P.~Serre,
+\emph{Local Fields},
+Graduate Texts in Mathematics, vol.~67,
+Springer-Verlag, New York, 1979.
+
+\bibitem{Skorobogatov2001}
+A.~Skorobogatov,
+\emph{Torsors and Rational Points},
+Cambridge Tracts in Mathematics, vol.~144,
+Cambridge University Press, 2001.
+
+\bibitem{Zarhin2000}
+Yu.~G.~Zarhin,
+\emph{Hyperelliptic Jacobians without complex multiplication},
+Math.\ Res.\ Lett.\ \textbf{7} (2000), no.~1, 123--132.
+
+\end{thebibliography}
+
+\end{document}

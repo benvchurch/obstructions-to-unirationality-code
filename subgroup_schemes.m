@@ -1,3 +1,32 @@
+/*******************************************************************************
+ * subgroup_schemes.m
+ *
+ * Purpose:
+ *   Compute Galois-invariant subgroups of PSL(2,13) under the outer automorphism
+ *   coming from conjugation in PGL(2,13). This is relevant for understanding
+ *   which subgroups descend to forms over the real subfield K+.
+ *
+ * Method:
+ *   1. Construct PGL(2,13) as a quotient of GL(2,13) by scalar matrices
+ *   2. Find the unique outer automorphism of order 2 with non-square determinant
+ *   3. Determine which subgroups of PSL(2,13) are invariant under this automorphism
+ *   4. Count invariant copies within each conjugacy class
+ *
+ * Output:
+ *   - Number of invariant subgroups
+ *   - Orders of invariant subgroups
+ *   - Counts for specific subgroups (D_7, D_6, A_4, etc.)
+ *   - Normalizer quotient orders (banding of gerbes for non-invariant subgroups)
+ *
+ * Dependencies:
+ *   None (standalone computation)
+ *
+ * Mathematical background:
+ *   For the Galois extension K/K+ with Gal(K/K+) = C_2, there is a unique
+ *   outer form of PSL(2,13). The invariant subgroups correspond to rational
+ *   points of certain moduli stacks.
+ ******************************************************************************/
+
 // finds the Galois-invariant subgroups of Aut(C)
 
 prim_root := 2; // primitive root mod 13
@@ -82,3 +111,17 @@ print "Number of subgroups of each conjugacy class invariant by g_2: ", counts;
 print "Invariant copies of D_7: ", counts[10];
 print "Invariant copies of D_6: ", counts[13];
 print "Invariant copies of A_4: ", counts[14];
+print "Invariant copies of U: ", counts[5];
+print "Invariant copies of B: ", counts[15];
+print "Invariant copies of S_3: ", counts[7];
+print "Invariant copies of C_6: ", counts[8];
+print "Invariant copies of S_3: ", counts[9];
+
+// the gerbe for a non-invariant subgroup which are all conjugates to eachother is banded by N_G(H) / H with N_G(H) the normalizer of H in G
+
+for i in [1..#subgroupClasses] do
+    H := subgroupClasses[i];
+    NGH := Normalizer(PSL2, H);
+    quotientOrder := Order(NGH) / Order(H);
+    print "Index: ", i, ", Order of N_G(H)/H: ", quotientOrder;
+end for;
