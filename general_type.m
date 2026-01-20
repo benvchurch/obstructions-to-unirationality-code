@@ -15,7 +15,7 @@ AllSeqsProductOne := function(G, n : include_identity := true)
         error "error: n must be >= 1";
     end if;
 
-    elems := [g : g in G];
+    elems := [G | g : g in G];
     if not include_identity then
         elems := [g : g in elems | g ne Id(G)];
     end if;
