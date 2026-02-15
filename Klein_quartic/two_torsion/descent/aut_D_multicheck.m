@@ -86,13 +86,14 @@ for p in primes do
         Z := Center(G);
         printf "  |Z(Aut(D))| = %o\n", #Z;
 
-        // Find deck involution: v -> -v, u -> u
+        // Find deck involution: v -> -v, u -> u, t -> t
+        // Must check t too! (t,u,v)->(-t,u,-v) also has v->-v, u->u
         deck_found := false;
         for g in G do
             if Order(g) ne 2 then continue; end if;
             a := g @@ phi;
             aut := mp(a);
-            if aut(vv) eq -vv and aut(FD!uu) eq FD!uu then
+            if aut(vv) eq -vv and aut(FD!uu) eq FD!uu and aut(FD!t) eq FD!t then
                 printf "  Deck involution: central? %o\n", g in Z;
                 deck_found := true;
                 break;

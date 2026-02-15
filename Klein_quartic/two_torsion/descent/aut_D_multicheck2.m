@@ -39,12 +39,12 @@ for p in primes do
             #G, id[1], id[2], GroupName(G);
         printf "  |Z(Aut(D))| = %o\n", #Center(G);
 
-        // Deck involution
+        // Deck involution: must also check t -> t
         for g in G do
             if Order(g) ne 2 then continue; end if;
             a := g @@ phi;
             aut := mp(a);
-            if aut(vv) eq -vv and aut(FD!uu) eq FD!uu then
+            if aut(vv) eq -vv and aut(FD!uu) eq FD!uu and aut(FD!t) eq FD!t then
                 printf "  Deck involution central? %o\n", g in Center(G);
                 break;
             end if;
@@ -55,14 +55,17 @@ for p in primes do
     printf "\n";
 end for;
 
-printf "=== ANALYSIS ===\n";
-printf "p=7  (no sqrt(-1)): |Aut| = 24 (anomalous? 7 is small)\n";
-printf "p=13 (has sqrt(-1)): |Aut| = 96\n";
-printf "p=19 (no sqrt(-1)): |Aut| = 48\n";
-printf "p=37 (has sqrt(-1)): |Aut| = ?\n";
-printf "p=43 (no sqrt(-1)): |Aut| = ?\n";
-printf "\nIf pattern is 96 when sqrt(-1) exists, 48 when not:\n";
-printf "=> [Aut(D_Qbar) : Aut(D_Q(sqrt(-3)))] = 2\n";
-printf "=> Some auts need sqrt(-1), field of definition is Q(sqrt(-3), i)\n";
+printf "=== RESULTS ===\n";
+printf "p=7  (no sqrt(-1)): |Aut| = 24 = C2*A4 (anomalous, small char)\n";
+printf "p=13 (has sqrt(-1)): |Aut| = 96 = C2^2.SL(2,3) = SmallGroup(96,3)\n";
+printf "p=19 (no sqrt(-1)): |Aut| = 48 = C2*S4\n";
+printf "p=37 (has sqrt(-1)): |Aut| = 96 = C2^2.SL(2,3) = SmallGroup(96,3)\n";
+printf "p=43 (no sqrt(-1)): |Aut| = 48 = C2*S4\n";
+printf "\nConclusions:\n";
+printf "- Geometric |Aut(D)| = 96, SmallGroup(96,3)\n";
+printf "- Field of definition = Q(sqrt(-3), i) = Q(zeta_12)\n";
+printf "- Over Q(sqrt(-3)) alone: index-2 subgroup C2*S4 (order 48)\n";
+printf "- Deck involution CENTRAL at all primes (once correctly identified)\n";
+printf "- Bug fix: must check t->t too, not just v->-v and u->u\n";
 
 quit;

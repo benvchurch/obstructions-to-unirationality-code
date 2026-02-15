@@ -43,7 +43,7 @@
 \newcommand{\Qbar}{\overline{\QQ}}
 \newcommand{\Cbar}{\overline{C}}
 
-\title{An explicit residual gerbe on $\mathcal{M}_5$}
+\title{The Brauer obstruction for the Fermat quartic}
 
 \author{}
 \date{\today}
@@ -51,18 +51,22 @@
 \begin{document}
 
 \begin{abstract}
-We exhibit a genus~$5$ curve, arising as an \'etale double cover of the
-Fermat quartic $C\colon x^4 + y^4 + z^4 = 0$, that is defined over
-$K = \QQ(\sqrt{-3})$ and isomorphic to its Galois conjugate, yet does not
-descend to~$\QQ$. The corresponding $2$-torsion line bundle
-$\eta \in J[2](\QQ)$ does not lie in the subgroup $V_{\mathrm{rat}}$ spanned
-by rational bitangent lines. By computing the descent cocycle
-$\lambda = f \cdot \sigma(f) = -2/3$, which is negative and hence not a
-norm from $K^*$, we establish a nontrivial obstruction class
-$\delta(\eta) \neq 0$ in $\Br(\QQ)[2]$.
-Via Tate's periodicity theorem, the element $[-2/3] \in
-\widehat{H}^0_T(\Gal(K/\QQ),\, K^*)$ corresponds to a nontrivial class in
-$\widehat{H}^2_T(\Gal(K/\QQ),\, K^*) \cong \Br(K/\QQ)$.
+We study the Brauer obstruction for the Fermat quartic
+$C\colon x^4 + y^4 + z^4 = 0$ over~$\QQ$.
+A quadric decomposition over $K = \QQ(\sqrt{-3})$ produces a $2$-torsion
+class $\eta \in J[2](\QQ) \setminus V_{\mathrm{rat}}$, corresponding to an
+\'etale double cover $D \to C$ of genus~$5$.
+By computing the descent cocycle $\lambda = f \cdot \sigma(f) = -2/3$,
+which is negative and hence not a norm from~$K^*$, we establish
+$\delta(\eta) \neq 0$ in $\Br(\QQ)[2]$: the cover $D \to C$ does not
+descend to~$\QQ$.
+However, the abstract curve $D$ \emph{does} admit a $\QQ$-model.
+The twist $C_2\colon x^4 + y^4 - z^4 = 0$, isomorphic to $C$ over
+$\QQ(\zeta_8)$, has a rational point $(1:0:1)$, and the transported
+class $\varphi(\eta)$ remains in $J[2](C_2)(\QQ)$.
+Since a rational point rigidifies the Picard scheme, the Brauer
+obstruction vanishes on~$C_2$, so the corresponding cover $D' \to C_2$
+descends to~$\QQ$, giving a $\QQ$-model of~$D$.
 All computations were performed in Magma~\cite{Magma}.
 \end{abstract}
 
@@ -82,11 +86,11 @@ $K = \QQ(\sqrt{-3})$ produces a $2$-torsion class
 $\eta \in J[2](\QQ) \setminus V_{\mathrm{rat}}$,
 where $V_{\mathrm{rat}} \subset J[2](\QQ)$ is the subgroup arising from
 rational bitangent lines. The class $\eta$ corresponds to an \'etale double
-cover $D \to C$ of genus~$5$, defined over $K$. While $D$ is isomorphic to
-its Galois conjugate $\sigma(D)$ as an abstract curve---and hence determines
-a $\QQ$-rational point on the coarse moduli space $\mathscr{M}_5$---the
-curve $D$ itself does not descend to $\QQ$. Equivalently, the residual gerbe
-of $\mathscr{M}_5$ at the point $[D]$ is nontrivial.
+cover $D \to C$ of genus~$5$, defined over $K$.
+The cover $D \to C$ does not descend to~$\QQ$: the Brauer obstruction
+$\delta(\eta) \neq 0$ prevents it. However, the abstract curve $D$
+\emph{does} admit a $\QQ$-model, obtained by transporting $\eta$ to a
+twist of $C$ that has a rational point.
 
 More precisely, the Hochschild--Serre spectral sequence provides a
 connecting homomorphism
@@ -595,61 +599,122 @@ to a normal subgroup of $\pi_1^{\text{\'et}}(C)$ defining a geometrically
 connected cover over $\QQ$ is precisely the Brauer class $\delta(\eta)$.
 
 %% ------------------------------------------------------------------------
+\subsection{Obstruction over $K = \QQ(\sqrt{-3})$ via $\Aut(D_K)$}
+\label{sec:aut_D}
+%% ------------------------------------------------------------------------
+
+The preceding arguments show that $D$ does not descend to $\QQ$ as a
+cover of $C$. One may ask whether the Brauer class $\delta(\eta)$ is
+killed by the larger automorphism group of $D$ itself---that is,
+whether the image of $\delta(\eta)$ under the map
+$H^2(\Gal(K/\QQ),\, K^*) \to H^2(\Gal(K/\QQ),\, \Aut(D_K))$
+induced by the inclusion $\langle \iota \rangle \hookrightarrow \Aut(D_K)$
+is trivial. If so, $D_K$ would descend from $K$ to $\QQ$
+(through this particular extension).
+
+A Magma computation over $\FF_{13}$ (where $\sqrt{-3}$ and $\sqrt{-1}$
+both exist) determines the full automorphism group:
+\[
+  \Aut(D_{\Qbar}) \;\cong\; C_2^2.\operatorname{SL}(2,3)
+  \quad (\text{SmallGroup}(96,3)),
+\]
+with geometric order $96$, confirmed at multiple primes $p = 13, 37$.
+Over $K$ alone (where $\sqrt{-1}$ is not available), only $48$
+automorphisms are visible: $\Aut(D_K) \cong C_2 \times S_4$
+(confirmed at primes $p = 19, 43$ where $\sqrt{-1} \notin \FF_p$).
+The full automorphism group is defined over
+$\QQ(\sqrt{-3}, i) = \QQ(\zeta_{12})$.
+
+The deck involution $\iota$ is \textbf{central} in $\Aut(D_K)$:
+it generates $Z(\Aut(D_K)) \cong \ZZ/2\ZZ$.
+The Galois group $\Gal(K/\QQ) = \langle \sigma \rangle$ acts
+\emph{trivially} on $\Aut(D_K)$, since $\sigma$ fixes both $Z(\Aut(D_K))$
+(the deck involution is canonical) and $\Aut(D_K)/Z(\Aut(D_K)) \cong S_4$
+(which is the stabiliser of $\eta$ in $\Aut(C)$, defined over $\QQ$).
+Furthermore, $\operatorname{Hom}(S_4, \ZZ/2\ZZ) \cong \ZZ/2\ZZ$ but
+the unique lift of the sign character does not split the extension,
+as one checks that no element $g \in \Aut(D_K)$ satisfies $g^2 = \iota$:
+all $24$ elements of order $4$ square to non-central involutions.
+
+Since $\sigma$ acts trivially on $\Aut(D_K)$, the cocycle
+$[\sigma \mapsto \iota] \in H^1(\Gal(K/\QQ),\, \Aut(D_K))$ is a
+homomorphism, and it is nontrivial because $\iota$ is central (hence
+not conjugate to the identity). Therefore the class $\delta(\eta)$ is
+\emph{not killed} in $H^2(\Gal(K/\QQ),\, \Aut(D_K))$, and $D_K$ does
+not descend from $K$ to $\QQ$ through this extension.
+
+%% ------------------------------------------------------------------------
 \subsection{Descent of $D$ as an abstract curve}
+\label{sec:abstract_descent}
 %% ------------------------------------------------------------------------
 
 The arguments above show that $D$ does not descend to $\QQ$ \emph{as a
-cover of $C$}. One may ask the stronger question: does $D$ descend to
-$\QQ$ as an abstract curve, forgetting the covering structure?
+cover of $C$}. We now show that, nevertheless, $D$ \emph{does} descend
+to $\QQ$ as an abstract curve.
 
-By the Weil descent criterion, $D$ descends to $\QQ$ if and only if
-there exists an isomorphism $\varphi\colon D \xrightarrow{\sim} \sigma(D)$
-satisfying the cocycle condition $\sigma(\varphi) \circ \varphi = \mathrm{id}$.
-The set of such isomorphisms is a coset of $\Aut(D)$, and the obstruction
-to choosing one satisfying the cocycle condition lives in
-$H^1(G_\QQ,\, \Aut(D_{\Qbar}))$.
+The key observation is that the deck involution $\iota$ is the unique
+involution of $D_{\Qbar}$ whose quotient is a smooth non-hyperelliptic
+curve of genus~$3$. It is therefore characterized by an intrinsic
+geometric property and must be preserved by any $G_\QQ$-action on
+$\Aut(D_{\Qbar})$. Consequently, if $D$ descends to some $D_0/\QQ$,
+the involution $\iota$ also descends, and $D_0/\langle \iota \rangle$
+is a twist $C'$ of $C$ over $\QQ$, with $D_0 \to C'$ an \'etale double
+cover defined over $\QQ$.
 
-For descent as a cover, the relevant automorphism group is
-$\Aut_C(D) = \langle \iota \rangle \cong \mu_2$, and the obstruction
-is $\delta(\eta) \neq 0$. For descent as an abstract curve, the group
-$\Aut(D)$ may be strictly larger (since automorphisms of $C$ preserving
-$\eta$ lift to $D$), potentially allowing the cocycle to be trivialized.
+Consider the twist $C_2\colon x^4 + y^4 - z^4 = 0$, which is isomorphic
+to $C$ via $\varphi\colon (x:y:z) \mapsto (x:y:\zeta_8 z)$ over
+$\QQ(\zeta_8)$, where $\zeta_8^4 = -1$. The isomorphism $\varphi$
+induces a map $\varphi_*\colon J[2](C) \to J[2](C_2)$, and a
+computation over $\FF_{49}$ (where both $\sqrt{-3}$ and $\zeta_8$
+exist) verifies that
+\[
+  \varphi_*(\eta) \;\in\; J[2](C_2)(\QQ).
+\]
+Specifically, over $\FF_{49}$ the class $\eta$ has coordinates
+$(1,0,0,0,1,0)$ in the $J[2]$ basis, and $\varphi_*(\eta) = (0,0,1,0,0,0)$,
+which is fixed by $\operatorname{Frob}_7$. Since the $2$-rank of $J(C_2)$
+at $p = 7$ equals $3 = \dim J[2](C_2)(\QQ)$, the Frobenius-fixed subspace
+equals $J[2](C_2)(\QQ)$, confirming rationality.
 
-However, the deck involution $\iota$ is the unique involution of
-$D_{\Qbar}$ whose quotient is a smooth non-hyperelliptic curve of
-genus~$3$. It is therefore characterized by an intrinsic geometric
-property and must be preserved by any $G_\QQ$-action on $\Aut(D_{\Qbar})$.
-Consequently, if $D$ descended to some $D_0/\QQ$, the involution $\iota$
-would also descend, and $D_0 / \langle \iota \rangle$ would be a
-genus~$3$ curve $C'/\QQ$ with $C'_{\Qbar} \cong C_{\Qbar}$, i.e., a
-\emph{twist} of $C$. The cover $D_0 \to C'$ would then be an \'etale
-double cover defined over $\QQ$, with corresponding $2$-torsion class
-$\eta'$ on $C'$ satisfying $\delta_{C'}(\eta') = 0$.
+\begin{proposition}\label{prop:D_descends}
+The abstract curve $D$ is defined over $\QQ$.
+\end{proposition}
 
-Since the obstruction map $\delta$ depends on the curve $C'$ (not just
-its geometric isomorphism class), the nontriviality of $\delta_C(\eta)$
-does not immediately rule out this scenario. Settling whether $D$
-descends as an abstract curve therefore requires either a direct
-computation of $H^1(G_\QQ,\, \Aut(D_{\Qbar}))$, or showing that no
-twist $C'$ of $C$ admits a $\QQ$-rational \'etale double cover in the
-class~$\eta$.
+\begin{proof}
+The curve $C_2$ has the rational point $(1:0:1)$, so its Picard scheme
+$\Pic_{C_2/\QQ}$ admits a section. This rigidifies the Picard scheme and
+implies that every Galois-invariant line bundle on $(C_2)_{\Qbar}$ descends
+to $\QQ$~\cite[\S5.5]{Poonen2017}. In particular, $\delta_{C_2}$ is
+identically zero on $J[2](C_2)(\QQ)$.
+
+Since $\varphi_*(\eta) \in J[2](C_2)(\QQ)$ and $\delta_{C_2}(\varphi_*(\eta)) = 0$,
+the \'etale double cover $D' \to C_2$ corresponding to $\varphi_*(\eta)$
+descends to $\QQ$---both the cover map and the total space $D'$.
+Over $\Qbar$, $D' \cong D$ (via $\varphi$), so $D$ has a $\QQ$-model.
+\end{proof}
 
 \begin{remark}
-The \'etale double cover $D \to C$ is a genus~$5$ curve defined over $K$.
-Since $D \cong \sigma(D)$, the isomorphism class $[D]$ determines a
-$\QQ$-rational point on the coarse moduli space $\mathscr{M}_5$.
-The nontriviality of $\delta(\eta)$ means that $D$ does not admit a model
-over $\QQ$ as a cover of $C$; the residual gerbe of the moduli stack
-$\mathscr{M}_5$ at the point $[D]$ may nonetheless be classified by a
-different (possibly trivial) element of $H^2(G_\QQ,\, \Aut(D_{\Qbar}))$.
+This shows that the residual gerbe of the moduli stack $\mathscr{M}_5$ at
+the point $[D]$ is \emph{trivial}: $D$ does admit a $\QQ$-model.
+What $\delta(\eta) \neq 0$ obstructs is only the descent of the
+\emph{cover} $D \to C$, not the descent of $D$ as a curve.
+\end{remark}
+
+\begin{remark}
+The $J[2](\QQ)$ subspaces of $C$ and $C_2$ are \emph{not} equal under
+$\varphi_*$: the intersection $\varphi_*(J[2](C)(\QQ)) \cap J[2](C_2)(\QQ)$
+has dimension~$2$ over $\FF_2$. The specific class $\eta$ survives
+(i.e., $\varphi_*(\eta) \in J[2](C_2)(\QQ)$), but some elements of
+$V_{\mathrm{rat}}(C)$ do \emph{not} remain rational on $C_2$.
 \end{remark}
 
 \begin{remark}
 The fact that no quadric decomposition of $x^4 + y^4 + z^4$ exists
 over $\QQ$ (nor over $\QQ(\sqrt{-1})$, $\QQ(\sqrt{-2})$, $\QQ(\sqrt{2})$,
 or $\QQ(\zeta_8)$) means that the class $\eta$ cannot be exhibited by
-a rational construction. The field $\QQ(\sqrt{-3})$ is, in some sense,
-the simplest extension over which the obstruction becomes visible.
+a rational construction on $C$ itself. The field $\QQ(\sqrt{-3})$ is,
+in some sense, the simplest extension over which the obstruction becomes
+visible.
 \end{remark}
 
 %% ========================================================================

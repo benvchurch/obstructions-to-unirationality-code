@@ -76,35 +76,44 @@ printf "Number of degree-1 places: %o\n", #deg1;
 
 // Store coordinates for each place; filter to those with t,u both nonzero
 // (so that no automorphism sends them to infinity in the z=1 chart)
-place_data := []; // list of <place, t-val, u-val>
+place_data := [* *]; // list of <place, t-val, u-val> with t,u in Fp
+
+// Build lookup: projective (a,b) -> place over Fp
+function AffKey(a, b)
+    return Sprintf("aff:%o,%o", Integers()!a, Integers()!b);
+end function;
+
+function InfKey(r)
+    return Sprintf("inf:%o", Integers()!r);
+end function;
+place_lookup := AssociativeArray();
+
 for P in deg1 do
-    a := Evaluate(elt_t, P);
-    b := Evaluate(elt_u, P);
-    if a ne 0 and b ne 0 then
+    a_raw := Evaluate(elt_t, P);
+    b_raw := Evaluate(elt_u, P);
+    ok_a, ai := IsCoercible(Integers(), a_raw);
+    ok_b, bi := IsCoercible(Integers(), b_raw);
+    if ok_a and ok_b then
+        a := Fp!ai; b := Fp!bi;
+        place_lookup[AffKey(a, b)] := P;
         Append(~place_data, <P, a, b>);
+    else
+        r_raw := Evaluate(elt_u/elt_t, P);
+        ok_r, ri := IsCoercible(Integers(), r_raw);
+        if ok_r then
+            r := Fp!ri;
+            place_lookup[InfKey(r)] := P;
+        end if;
     end if;
 end for;
-printf "Degree-1 places with nonzero coords: %o\n", #place_data;
-
-// Build lookup: (a,b) -> place
-place_lookup := AssociativeArray();
-for dat in place_data do
-    place_lookup[<dat[2], dat[3]>] := dat[1];
-end for;
-
-// Also store ALL degree-1 places in lookup (including zero-coord ones)
-for P in deg1 do
-    a := Evaluate(elt_t, P);
-    b := Evaluate(elt_u, P);
-    place_lookup[<a, b>] := P;
-end for;
+printf "Degree-1 places with finite coords: %o\n", #place_data;
 
 // Find 6 linearly independent vectors in J/2J from place differences.
 // Each basis element is a pair <P_place, Q_place, P_coords, Q_coords>
 // representing the class [P - Q] mod 2J.
 ref := place_data[1]; // reference place
 
-basis_pairs := []; // <P_data, Q_data> where each is <place, a, b>
+basis_pairs := [* *]; // <P_data, Q_data> where each is <place, a, b>
 basis_vecs := [];
 span := sub<V6 | >;
 
@@ -196,10 +205,16 @@ assert #aut_list eq 96;
 // compute M(P_j), M(Q_j), form [M(P_j)-M(Q_j)] mod 2J.
 // Then: basis_vecs[j] * M_bar = img_vecs[j], so M_bar = B^{-1} * C.
 
-// Helper: apply a PGL(3) matrix to an affine point, return new affine coords
-function ApplyAut(M, a, b)
+// Helper: apply a PGL(3) matrix to an affine point, return lookup key
+function ApplyAutKey(M, a, b)
     v := M * Matrix(Fp, 3, 1, [a, b, 1]);
-    return v[1,1] / v[3,1], v[2,1] / v[3,1];
+    if v[3,1] ne 0 then
+        return AffKey(v[1,1] / v[3,1], v[2,1] / v[3,1]);
+    end if;
+    if v[1,1] ne 0 then
+        return InfKey(v[2,1] / v[1,1]);
+    end if;
+    return InfKey(v[1,1] / v[2,1]);
 end function;
 
 aut_F2_matrices := [];
@@ -214,11 +229,11 @@ for k in [1..96] do
         Qdat := basis_pairs[j][2];
 
         // Apply M to both points
-        aP2, bP2 := ApplyAut(M, Pdat[2], Pdat[3]);
-        aQ2, bQ2 := ApplyAut(M, Qdat[2], Qdat[3]);
+        keyP := ApplyAutKey(M, Pdat[2], Pdat[3]);
+        keyQ := ApplyAutKey(M, Qdat[2], Qdat[3]);
 
-        M_P := place_lookup[<aP2, bP2>];
-        M_Q := place_lookup[<aQ2, bQ2>];
+        M_P := place_lookup[keyP];
+        M_Q := place_lookup[keyQ];
 
         // Divisor: M(P_j) - M(Q_j)
         D_img := 1*M_P - 1*M_Q;

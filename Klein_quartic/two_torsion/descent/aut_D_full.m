@@ -73,7 +73,7 @@ printf "  Testing %o involutions...\n", #involution_elts;
 for g in involution_elts do
     a := g @@ phi;
     aut := mp(a);
-    if aut(vv) eq -vv and aut(FD!uu) eq FD!uu then
+    if aut(vv) eq -vv and aut(FD!uu) eq FD!uu and aut(FD!t) eq FD!t then
         deck_G := g;
         found := true;
         break;
