@@ -1,0 +1,12 @@
+Loading "steiner_pipeline.m"
+
+>>> Running pipeline on klein_twist (output -> results/klein_twist.log)
+    OK (CPU 2.6s)
+
+>>> Running pipeline on fermat (output -> results/fermat.log)
+    OK (CPU 7.5s)
+
+>>> Running pipeline on edge (output -> results/edge.log)
+    OK (CPU 4.0s)
+
+All runs done. See results/SUMMARY.txt and results/*.log

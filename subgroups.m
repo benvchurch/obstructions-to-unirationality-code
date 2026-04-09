@@ -133,12 +133,19 @@ CreateSubgroupLatticeLaTeX := function(G : labels := [], output_prefix := "subgr
     // Replace placeholder labels with proper LaTeX labels
     final_tex := raw_tex;
     
-    // Add centering and scaling to the tikzpicture environment
-    pos := Position(final_tex, "\\begin{tikzpicture}[");
+    // Use standalone document class so the page auto-sizes to the diagram
+    pos := Position(final_tex, "\\documentclass{article}");
     if pos gt 0 then
-        final_tex := Substring(final_tex, 1, pos-1) cat 
-                    "\\\hspace{-3cm}\n\\begin{tikzpicture}[scale = 0.8," cat 
-                    Substring(final_tex, pos + #"\\begin{tikzpicture}[", #final_tex);
+        final_tex := Substring(final_tex, 1, pos-1) cat
+                    "\\documentclass[border=5pt]{standalone}" cat
+                    Substring(final_tex, pos + #"\\documentclass{article}", #final_tex);
+    end if;
+
+    // Remove enlargethispage hack (no longer needed with standalone)
+    pos := Position(final_tex, "\\enlargethispage{100cm}\n");
+    if pos gt 0 then
+        final_tex := Substring(final_tex, 1, pos-1) cat
+                    Substring(final_tex, pos + #"\\enlargethispage{100cm}\n", #final_tex);
     end if;
     
     for i in [1..n] do
@@ -166,6 +173,10 @@ CreateSubgroupLatticeLaTeX := function(G : labels := [], output_prefix := "subgr
     return final_tex_file;
 end function;
 
+// build the subgroup lattice for the genus 17 Hurwitz curve
+
+import "intermediate_extensions.m" : GenusIntermediateExtension;
+
 S := SymmetricGroup(14);
 P := S!(1, 13, 2, 11, 4, 5, 8)(3, 10, 6, 14, 7, 9, 12);
 Q := S!(1, 7, 3, 4)(2, 11, 13, 9, 6, 14, 10, 5);
@@ -189,6 +200,25 @@ for i in [1..#subgroups] do
 end for; 
 
 output_file := CreateSubgroupLatticeLaTeX(G : labels := genera, output_prefix := "subgroup_lattice_genera");
+printf "Generated LaTeX file: %o\n", output_file;
+
+genera := [];
+
+M1 := IrreducibleModules(G, Rationals())[2];
+M2 := IrreducibleModules(G, Rationals())[8];
+
+function fixed_point_dimension(M, H)
+    return InnerProduct(Character(Restriction(M, H)), Character(IrreducibleModules(H, Rationals())[1]));
+end function;
+
+jacobians := [];
+
+for i in [1..#subgroups] do
+    H := subgroups[i];
+    Append(~jacobians, [fixed_point_dimension(M1, H)/2, fixed_point_dimension(M2, H)]);
+end for; 
+
+output_file := CreateSubgroupLatticeLaTeX(G : labels := jacobians, output_prefix := "subgroup_lattice_jacobians");
 printf "Generated LaTeX file: %o\n", output_file;
 
 output_file := CreateSubgroupLatticeLaTeX(G : labels := [1..#subgroups], output_prefix := "subgroup_lattice_ordered");

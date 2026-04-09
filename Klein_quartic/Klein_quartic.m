@@ -62,10 +62,10 @@ phi_F2 := Representation(M_F2);
 
 S3 := Subgroups(G)[8]`subgroup;
 M_S3 := Restriction(M_F2, S3);
-Decomposition(M_S3);
+//Decomposition(M_S3);
 
-Decomposition(M_F2)[1];
-Decomposition(Restriction(Decomposition(M_F2)[1], S3));
+//Decomposition(M_F2)[1];
+//Decomposition(Restriction(Decomposition(M_F2)[1], S3));
 
 
 // More efficient version using Magma's built-in orbit computation

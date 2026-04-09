@@ -1,0 +1,741 @@
+\documentclass[11pt]{amsart}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{microtype}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!50!black,
+  citecolor=blue!50!black,
+}
+
+% --- theorem environments ---
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- shortcuts ---
+\newcommand{\Pic}{\operatorname{Pic}}
+\newcommand{\Jac}{\operatorname{Jac}}
+\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\Sp}{\operatorname{Sp}}
+\newcommand{\Arf}{\operatorname{Arf}}
+\newcommand{\Parity}{\operatorname{par}}
+\newcommand{\Hom}{\operatorname{Hom}}
+\newcommand{\Mat}{\operatorname{Mat}}
+\newcommand{\Nm}{\operatorname{Nm}}
+\newcommand{\PSL}{\operatorname{PSL}}
+\newcommand{\PGL}{\operatorname{PGL}}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Cc}{\mathcal C}
+\newcommand{\Hh}{\mathcal H}
+\newcommand{\Mm}{\mathcal M}
+\newcommand{\Aa}{\mathcal A}
+\newcommand{\Rr}{\mathcal R}
+\newcommand{\Oo}{\mathcal O}
+
+% --- title ---
+\title{From bitangents to genus-2 Pryms:\\
+the math behind the pipeline}
+\author{Documentation note}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This note documents the algebraic geometry implemented in
+\texttt{steiner\_genus2.m}, \texttt{steiner.m}, \texttt{steiner\_edge.m},
+\texttt{hensel\_decomp.m}, and the \texttt{check\_isogeny*.m} family. It
+explains how the 28 bitangents of a smooth plane quartic, the 63 Steiner
+complexes, the quartic decomposition formula
+$aF = L_iL_jL_kL_l + bQ^2$, and the determinantal pencil that produces
+genus-2 curves all fit together --- and why the resulting genus-2 curves
+are the Prym varieties of the \'etale double covers of $C$.
+\end{abstract}
+
+Throughout, $C \subset \Pp^2$ is a smooth plane quartic over a field $k$ of
+characteristic $\ne 2$, $g(C) = 3$, $K_C = \Oo_C(1)$, and $J = \Jac(C)$.
+
+%==========================================================================
+\section{Theta characteristics on a curve of genus 3}
+%==========================================================================
+
+A \emph{theta characteristic} on a smooth projective curve $C$ of genus $g$
+is a line bundle $\kappa \in \Pic(C)$ satisfying
+\[
+  \kappa^{\otimes 2} \;\cong\; K_C.
+\]
+The set $\Theta(C)$ of theta characteristics is a torsor under
+$J[2] = \Pic^0(C)[2] \cong (\Z/2)^{2g}$: once any $\kappa_0$ is fixed, every
+theta characteristic is of the form $\kappa_0 + \eta$ for a unique
+$\eta \in J[2]$. So $|\Theta(C)| = 2^{2g}$ --- for $g = 3$, that's $64$.
+
+Each theta characteristic has a $\Z/2$-valued \emph{parity}
+\[
+  \Parity(\kappa) \;:=\; h^0(C, \kappa) \bmod 2,
+\]
+shown by Atiyah and Mumford to be a deformation invariant
+\cite{Atiyah1971,Mumford1971}. The number of even and odd theta
+characteristics is given by
+\[
+  N_+ = 2^{g-1}(2^g + 1), \qquad N_- = 2^{g-1}(2^g - 1).
+\]
+For $g = 3$: $N_+ = 36$ even and $N_- = 28$ odd. The conceptual reason for
+this split is the \emph{Arf invariant} of a quadratic refinement of the Weil
+pairing --- the topic of \S\ref{sec:arf}.
+
+%==========================================================================
+\section{Symplectic structure on $J[2]$ and the Arf invariant}
+\label{sec:arf}
+%==========================================================================
+
+\subsection{The Weil pairing makes $J[2]$ into a symplectic $\F_2$-space}
+
+The Weil pairing on 2-torsion,
+\[
+  e_2 \colon J[2] \times J[2] \;\longrightarrow\; \mu_2 \;\cong\; \F_2,
+\]
+is a non-degenerate alternating bilinear form. For a curve of genus $g$,
+$J[2] \cong \F_2^{2g}$, and $(J[2], e_2)$ admits a \emph{symplectic basis}
+$e_1, f_1, \ldots, e_g, f_g$ with
+\[
+  e_2(e_i, f_j) = \delta_{ij}, \qquad e_2(e_i, e_j) = e_2(f_i, f_j) = 0.
+\]
+The full symmetry group is $\Sp(2g, \F_2)$, of order
+$2^{g^2}\prod_{k=1}^{g}(2^{2k} - 1)$. For $g = 3$ this gives
+$|\Sp(6, \F_2)| = 1\,451\,520$.
+
+\begin{remark}[{$J[2]$ vs $J/2J$ in computation}]\label{rem:J2-vs-J/2J}
+The 2-torsion subgroup $J[2]$ and the quotient $J/2J$ are abstractly
+isomorphic (both are $\F_2^{2g}$ for $J$ finite over $\bar k$), but they are
+\emph{Cartier dual} as Galois modules over a non-algebraically-closed field.
+On the Magma side, picking out the order-2 element of each cyclic factor of
+$J(\F_p)$ gives the $J[2]$-class; reducing coordinates mod $2$ gives the
+$J/2J$-class. These two prescriptions agree as functions of the abstract
+group, but \emph{differ} as functions of the actual Magma class group whenever
+$J(\F_p)$ has a $\Z/2^k\Z$ factor with $k \ge 2$. The pipeline systematically
+uses $J[2]$ (the function \texttt{ClassJ2} in \texttt{steiner\_genus2.m},
+which evaluates $a \mapsto (2a \,\mathrm{div}\, n) \bmod 2$ on each
+$\Z/n\Z$ summand with $n$ even).
+\end{remark}
+
+\subsection{Quadratic refinements}
+
+A \emph{quadratic refinement} of $e_2$ is a function
+$q \colon J[2] \to \F_2$ satisfying
+\[
+  q(x + y) \;=\; q(x) \;+\; q(y) \;+\; e_2(x, y) \qquad
+  \forall\, x, y \in J[2].
+\]
+The set of refinements forms a torsor under the additive group of linear
+forms $J[2] \to \F_2$, which via $e_2$ is identified with $J[2]$ itself; in
+particular there are exactly $2^{2g}$ quadratic refinements of $e_2$.
+
+\begin{definition}[Arf invariant]
+The \emph{Arf invariant} of a quadratic refinement $q$ is the element
+\[
+  \Arf(q) \;:=\; \sum_{i=1}^{g} q(e_i)\,q(f_i) \;\in\; \F_2
+\]
+computed in any symplectic basis $(e_i, f_i)$; the sum is independent of the
+chosen basis.
+\end{definition}
+
+Equivalently, the Arf invariant is the \emph{majority bit} of $q$:
+\[
+  |q^{-1}(0)| \;=\; 2^{2g-1} + 2^{g-1}(-1)^{\Arf(q)},
+  \qquad
+  |q^{-1}(1)| \;=\; 2^{2g-1} - 2^{g-1}(-1)^{\Arf(q)}.
+\]
+A refinement is called \emph{even} if $\Arf(q) = 0$ and \emph{odd} if
+$\Arf(q) = 1$. From the formula above, the number of even refinements is
+$2^{g-1}(2^g + 1)$ and the number of odd is $2^{g-1}(2^g - 1)$ --- exactly
+$N_+$ and $N_-$ from \S 1.
+
+Arf introduced this invariant in \cite{Arf1941} precisely to classify
+quadratic forms over $\F_2$. The pair $(\mathrm{rank}, \Arf)$ is a complete
+invariant of a non-degenerate quadratic form over $\F_2$, and $\Arf$ is the
+unique non-trivial $\Sp(2g, \F_2)$-invariant of a quadratic refinement of a
+fixed symplectic form.
+
+\subsection{Riemann--Mumford: $\Theta(C)$ $\leftrightarrow$ refinements}
+
+The numerical coincidence between $|\Theta_\pm|$ and the count of even/odd
+refinements is no accident:
+
+\begin{theorem}[Riemann--Mumford]\label{thm:RM}
+Let $C$ be a smooth projective curve over an algebraically closed field of
+characteristic $\ne 2$. There is a canonical bijection
+\[
+  \Theta(C) \;\xrightarrow{\;\sim\;}\;
+  \bigl\{\text{quadratic refinements of } e_2 \text{ on } J(C)[2]\bigr\},
+  \qquad \kappa \;\longmapsto\; q_\kappa,
+\]
+defined by
+\[
+  q_\kappa(\eta) \;=\; h^0(C, \kappa + \eta) \;+\; h^0(C, \kappa) \pmod 2.
+\]
+This bijection intertwines parity with the Arf invariant:
+\[
+  \Parity(\kappa) \;=\; h^0(C, \kappa) \bmod 2 \;=\; \Arf(q_\kappa).
+\]
+\end{theorem}
+
+In particular, the Arf-invariant counting formula recovers
+$N_\pm = 2^{g-1}(2^g \pm 1)$ as a \emph{conceptual} fact, not a coincidence.
+References: \cite{Riemann1857,Mumford1971,Atiyah1971,Dolgachev2012}.
+
+\subsection{Translation behaviour: when does parity flip?}
+
+Two consequences of Theorem~\ref{thm:RM} structure the rest of the paper:
+
+\begin{proposition}[Parity flip rule]
+For $\kappa \in \Theta(C)$ and $\eta \in J[2]$,
+\[
+  \Parity(\kappa + \eta) \;-\; \Parity(\kappa) \;=\; q_\kappa(\eta) \pmod 2.
+\]
+That is, translation by $\eta$ flips parity iff $\eta$ is ``$q_\kappa$-odd''.
+\end{proposition}
+
+\begin{proposition}[{Abstract even/odd dichotomy on $J[2] \setminus \{0\}$}]
+Fix any even theta characteristic $\kappa_0$, and use it to identify
+$\Theta(C)$ with $J[2]$ via $\eta \mapsto \kappa_0 + \eta$. Then
+\[
+  J[2] \setminus \{0\} \;=\;
+  \underbrace{\{\eta : q_{\kappa_0}(\eta) = 0\}}_{|.|\,=\,2^{2g-1} - 1}
+  \;\sqcup\;
+  \underbrace{\{\eta : q_{\kappa_0}(\eta) = 1\}}_{|.|\,=\,2^{2g-1}}.
+\]
+\end{proposition}
+
+For $g = 3$ this is the famous decomposition
+\[
+  63 \;=\; 35 \;+\; 28,
+\]
+where the $35$ ``even'' classes correspond to even theta characteristics
+distinct from $\kappa_0$ and the $28$ ``odd'' classes correspond to odd theta
+characteristics (= bitangents, by \S\ref{sec:bitangents}).
+
+The partition into 35 and 28 is invariant under $\Sp(6, \F_2)$ --- it does
+\emph{not} depend on the choice of even base $\kappa_0$, although the
+labelling of individual elements does. Classically, the 35 even nonzero
+classes are called \emph{syzygetic} and the 28 odd ones are called
+\emph{azygetic} \cite[\S 219]{Salmon1879}; modern accounts in
+\cite{DolgachevOrtland1988,Dolgachev2012}.
+
+\subsection{The Klein quartic case}
+
+For the Klein quartic, the geometric automorphism group $\PSL(2,7)$ embeds
+in $\Sp(6, \F_2)$ and acts on $J[2] \setminus \{0\}$. The orbit decomposition
+respects the Arf decomposition $63 = 35 + 28$:
+
+\begin{center}
+\begin{tabular}{ccc}
+\toprule
+Orbit size & Arf type of $\eta$ & Classical name \\
+\midrule
+$28$ & odd & azygetic / ``bitangent class'' \\
+$21$ & even & syzygetic \\
+$7 + 7$ (Galois-conjugate pair) & even & syzygetic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Totals: $28 + 21 + 7 + 7 = 63$, with $35 = 21 + 7 + 7$ even and $28$ odd. \checkmark
+
+This is the orbit data that the Steiner-pipeline scripts process for the
+Klein quartic and its twist \texttt{C\_twist} (see
+\texttt{klein\_steiner\_pryms.md} in the project memory for the corresponding
+$j$-invariant data).
+
+%==========================================================================
+\section{Bitangents = odd theta characteristics}
+\label{sec:bitangents}
+%==========================================================================
+
+For a smooth plane quartic $C \subset \Pp^2$, the canonical bundle is
+$K_C = \Oo_C(1)$, so canonical divisors are cut out by lines. A
+\emph{bitangent} line $L \subset \Pp^2$ to $C$ is one whose intersection
+divisor on $C$ is a sum of two double points,
+\[
+  L \cdot C \;=\; 2P + 2Q
+\]
+(or $4P$ for a hyperflex). The line gives a section of $\Oo_C(1) = K_C$
+vanishing on $2P + 2Q$, so $K_C \sim 2(P + Q)$, which means $D := P + Q$ (an
+effective degree-2 divisor) defines a theta characteristic
+\[
+  \kappa_L \;:=\; \Oo_C(P + Q) \;\in\; \Theta(C).
+\]
+This $\kappa_L$ is \emph{odd}: it has the obvious nonzero section vanishing
+on $P + Q$, so $h^0(\kappa_L) \ge 1$. By Riemann--Roch and Clifford,
+$h^0(\kappa_L) = 1$ generically, and $\Arf(q_{\kappa_L}) = 1$.
+
+\begin{theorem}[Aronhold, Cayley, Salmon]
+The map $L \mapsto \kappa_L$ is a bijection between bitangents to $C$ and
+odd theta characteristics. In particular, a smooth plane quartic has exactly
+$N_- = 28$ bitangents.
+\end{theorem}
+
+References: \cite[\S 216]{Salmon1879}, \cite[\S 6.1]{Dolgachev2012}.
+
+In the code, \texttt{FindBitangentsFp} searches for lines $L = [A:B:C]$ over
+$\F_p$ such that the restriction of $F$ to $L$ is a perfect square as a
+polynomial in the line parameter. Over a number field, the script builds
+the \emph{tangency ideal}
+\[
+  I_{\mathrm{tg}} \;=\; \bigl\langle\,
+  \mathrm{coeff}_t F(t,1,-at-b) \;-\; \mathrm{coeff}_t (\alpha t^2 + \beta t + \gamma)^2
+  \,\bigr\rangle \;\subset\; \Q[a,b,\alpha,\beta,\gamma],
+\]
+eliminates $\alpha,\beta,\gamma$, and factors the resulting univariate in
+$b$ (then $a$) to find bitangent coordinates over the splitting field. Three
+charts are used to cover lines through $[1\!:\!0\!:\!0]$ and the line
+$\{x = 0\}$.
+
+%==========================================================================
+\section{Steiner complexes from $J[2]$}
+\label{sec:steiner}
+%==========================================================================
+
+Fix two odd theta characteristics $\kappa_i, \kappa_j \in \Theta_-$
+corresponding to bitangents $L_i, L_j$. Their difference is a 2-torsion
+element
+\[
+  \eta_{ij} \;:=\; \kappa_i - \kappa_j \;\in\; J[2].
+\]
+For a fixed nonzero $\eta \in J[2]$, the set
+\[
+  S_\eta \;:=\; \bigl\{\, \{i,j\} \;:\; \kappa_i - \kappa_j = \eta \,\bigr\}
+\]
+is the \emph{Steiner complex} associated to $\eta$.
+
+\paragraph{Counting.}
+Every unordered pair of distinct bitangents gives a unique nonzero
+$\eta \in J[2]$ as its difference, and there are $\binom{28}{2} = 378$ such
+pairs and $|J[2] \setminus \{0\}| = 63$ classes. By a uniform counting
+argument (the action of $J[2]$ on pairs is balanced under the symplectic
+geometric monodromy), each nonzero $\eta$ appears the same number of times:
+\[
+  |S_\eta| \;=\; \frac{\binom{N_-}{2}}{|J[2] \setminus \{0\}|}
+  \;=\; \frac{\binom{28}{2}}{63} \;=\; 6 \quad (g = 3).
+\]
+So \textbf{each Steiner complex consists of exactly $6$ disjoint pairs of
+bitangents}, i.e.\ $12$ bitangents in total, and there are $63$ such
+complexes. The remaining $28 - 12 = 16$ bitangents are not involved in any
+given $S_\eta$. Double-counting incidences via $63 \cdot 12 = 28 \cdot k$
+gives $k = 27$: \textbf{each bitangent appears in exactly $27$ Steiner
+complexes} (one per partner).
+
+References: \cite[\S 6.1.5]{Dolgachev2012}, \cite[\S 219]{Salmon1879},
+\cite{DolgachevOrtland1988}.
+
+The number $63 \cdot 6 = 378 = \binom{28}{2}$ accounts for every unordered
+pair of bitangents. The combinatorics encodes the symmetric structure of
+the \emph{Cayley quartic} or ``Aronhold set'': modulo $\Sp(6, \F_2)$, this
+is the orbit data of the natural action on the 28 odd characteristics.
+
+\subsection{Computing $\eta_{ij}$ in Magma: the $J[2]$ class, not $J/2J$}
+
+The function field of $C$ over $\F_p$ is constructed in
+\texttt{steiner\_genus2.m}. For each bitangent line $L_i$, the script forms
+the function $L_i / L_{\mathrm{ref}} \in k(C)$, takes
+\[
+  \tfrac12 \operatorname{div}\!\bigl(L_i / L_{\mathrm{ref}}\bigr) \;\in\; \Pic^0(C),
+\]
+which is well-defined exactly because $L_i$ is bitangent (all valuations
+even), and recovers the corresponding $J[2]$ class
+$\eta_i = \kappa_i - \kappa_{\mathrm{ref}}$.
+
+The translation from a class group element to a $J[2]$ element is performed
+by the function \texttt{ClassJ2}:
+\begin{verbatim}
+j2 := [];
+for k in [1..#invs] do
+    if invs[k] eq 0 then continue; end if;
+    if invs[k] mod 2 ne 0 then continue; end if;
+    // For Z/nZ (n even), the unique 2-torsion element is n/2.
+    // The map a -> (2*a div n) mod 2 sends 0 -> 0 and n/2 -> 1.
+    Append(~j2, (2 * coords[k] div invs[k]) mod 2);
+end for;
+\end{verbatim}
+This is \emph{not} the same as \texttt{ReduceMod2}, which reduces every
+coordinate of the class-group element mod 2 --- that would give the $J/2J$
+class. Cf.\ Remark~\ref{rem:J2-vs-J/2J}; the Steiner pipeline needs the
+literal 2-torsion line bundle, so \texttt{ClassJ2} is the correct primitive.
+
+Pairs $\{i,j\}$ are then binned by the $J[2]$ class $\eta_i - \eta_j$ to
+recover the 63 complexes (each with 6 pairs, verified by the assertions
+\texttt{nclasses eq 63} and \texttt{s eq 6}).
+
+\subsection{Even vs.\ odd $\eta$, and the parity of the complex}
+
+By the Arf decomposition of \S\ref{sec:arf}, the quadratic refinement
+$q_{\kappa_0}$ on $J[2]$ partitions the nonzero classes into 35 syzygetic
+(even, $q = 0$) and 28 azygetic (odd, $q = 1$). The classical Steiner-complex
+theory of plane quartics is developed for the syzygetic case: a syzygetic
+Steiner complex is the data needed to write the quartic decomposition
+$aF = L_iL_jL_kL_l + bQ^2$ of \S\ref{sec:quartic-decomp}.
+
+For a plane quartic with $g = 3$, the 28 odd nonzero $\eta$ are in canonical
+bijection with the 28 bitangents (via the parity-flip rule: the ``bitangent
+class'' of a bitangent $L_i$ is $\kappa_i - \kappa_0$). The 35 even nonzero
+$\eta$ correspond to the 35 even theta characteristics of the form
+$\kappa_0 + \eta$; equivalently, to Cayley octads / Aronhold systems of seven
+bitangents \cite[Ch.\ 6]{Dolgachev2012}.
+
+For the Klein quartic specifically, the orbit decomposition $28 + 21 + 7 + 7$
+under $\PSL(2,7)$ refines this: one orbit of size 28 = the azygetic orbit,
+three orbits (sizes 21, 7, 7) inside the 35 syzygetic classes.
+
+%==========================================================================
+\section{The quartic decomposition formula}
+\label{sec:quartic-decomp}
+%==========================================================================
+
+Fix a Steiner complex
+$S_\eta = \bigl\{\{i_1,j_1\}, \ldots, \{i_6,j_6\}\bigr\}$ and pick \emph{two}
+of its six pairs, say $\{i,j\}$ and $\{k,l\}$. The classical identity is:
+
+\begin{theorem}\label{thm:quartic-decomp}
+There exists a conic $Q \in H^0(\Pp^2, \Oo(2))$ and scalars $a, b \in k$
+(not both zero) such that
+\begin{equation}\label{eq:star}
+  a F \;=\; L_i L_j L_k L_l \;+\; b Q^2.
+\end{equation}
+The conic $Q$ is the unique (up to scalar) \emph{contact conic} that is
+tangent to $C$ at the eight contact points $\{P_i, P_j, P_k, P_l\}$ of the
+four bitangents.
+\end{theorem}
+
+References: \cite[\S 220]{Salmon1879}, \cite[Prop.\ 6.1.7]{Dolgachev2012},
+and \cite{CaporasoSernesi2003} for a modern reconstruction perspective.
+
+The geometric content of \eqref{eq:star} is: cutting out $Q^2 = 0$ on $C$
+gives the divisor $2(P_i + P_j + P_k + P_l)$, which equals the divisor cut
+by $L_i L_j L_k L_l$ on $C$ (each line contributes $2 P_m$). Both sides
+therefore give effective representatives of $4 K_C$, and \eqref{eq:star} is
+the unique linear relation between $L_i L_j L_k L_l$, $Q^2$, and $F$ in
+degree $4$.
+
+In the code, two linear-algebra steps implement this:
+\begin{enumerate}
+\item \texttt{FindConic} assembles a $12 \times 10$ matrix encoding the
+  conditions ``the restriction of $Q$ to each $L_m$ is proportional to the
+  contact quadratic $h_m$ of $L_m$'' for $m \in \{i,j,k,l\}$ (3 conditions
+  per line, so 12 rows; 6 unknowns for $Q$ and 4 proportionality constants
+  $\lambda_m$, so 10 columns). The kernel is $1$-dimensional and gives $Q$.
+\item The quartic-decomposition step then assembles the $3 \times 15$ matrix
+  whose rows are the coefficient vectors of $F$, $L_i L_j L_k L_l$, and
+  $Q^2$ in the basis of degree-4 monomials, and reads off the relation
+  $a F + (-1) L_i L_j L_k L_l + b Q^2 = 0$ from the kernel.
+\end{enumerate}
+For each Steiner complex there are $\binom{6}{2} = 15$ pair-of-pairs, hence
+$63 \cdot 15 = 945$ such conics in total. The script verifies them all and
+prints \texttt{Verified 945 / 945}.
+
+%==========================================================================
+\section{From the decomposition to a $3 \times 3$ symmetric pencil}
+\label{sec:pencil}
+%==========================================================================
+
+Rewrite \eqref{eq:star} as
+\[
+  b Q^2 \;-\; (-L_i L_j)(L_k L_l) \;=\; a F.
+\]
+Set $Q_1 := b\, L_i L_j$, $Q_2 := b\, Q$, $Q_3 := -L_k L_l$ (each a
+homogeneous quadratic form, i.e.\ an element of $\Sym^2 V^*$ with $V = k^3$).
+Then
+\[
+  Q_1 Q_3 \;-\; Q_2^2 \;=\; -a b\, F,
+\]
+i.e.\ $C$ is cut out (up to scalar) by the \emph{discriminant} of the
+symmetric matrix
+\[
+  M \;:=\; \begin{pmatrix} Q_1 & Q_2 \\ Q_2 & Q_3 \end{pmatrix},
+\]
+viewing $Q_1, Q_2, Q_3$ as quadratic forms on $\Pp^2$. Equivalently, $C$ is
+the \emph{degeneracy locus} of the pencil $\{Q_1 + 2 t Q_2 + t^2 Q_3\}$ of
+conics, parametrised by $t \in \Pp^1$.
+
+Now upgrade to the level of $3 \times 3$ symmetric matrices on $\Pp^2$
+itself: write each conic $Q_m$ as a symmetric matrix
+$M_m \in \Sym^2(k^3)$ of size $3$, and form the matrix-valued polynomial
+\[
+  M(t) \;:=\; M_1 \;+\; 2 t\, M_2 \;+\; t^2 M_3 \;\in\; \Mat_3(k[t]).
+\]
+The locus
+\[
+  \widetilde C \;:=\; \bigl\{\, (t, [v]) \in \Pp^1 \times \Pp^2 \;:\;
+   v^\top M(t) v = 0 \,\bigr\}
+\]
+is a $(2,2)$-divisor in $\Pp^1 \times \Pp^2$; the projection
+$\widetilde C \to \Pp^1$ is a conic bundle (smooth conics for generic $t$,
+degenerating to line pairs when $\det M(t) = 0$).
+
+\begin{definition}
+Set $B := \bigl\{\, t \in \Pp^1 \;:\; \det M(t) = 0 \,\bigr\}$. For generic
+input, $\det M(t)$ is a polynomial of degree $6$, so $|B| = 6$. The
+hyperelliptic curve
+\[
+  \Hh \;:\; y^2 \;=\; -\det M(t)
+\]
+has $6$ Weierstrass points (or $5 +$ the point at infinity when $\det$ has
+degree $5$), hence genus
+\[
+  g(\Hh) \;=\; \tfrac{6 - 2}{2} \;=\; 2.
+\]
+\end{definition}
+
+This is the function \texttt{MakeGenus2} in \texttt{steiner\_genus2.m} and
+\texttt{steiner.m}.
+
+%==========================================================================
+\section{Why $\Hh$ is the Prym variety}
+\label{sec:prym}
+%==========================================================================
+
+For each non-zero $\eta \in J(C)[2]$ there is an associated \emph{\'etale
+double cover} $\pi \colon D_\eta \to C$, classified by
+$\eta \in H^1(C, \Z/2) \cong J(C)[2]$. By Riemann--Hurwitz,
+\[
+  2(g_{D_\eta} - 1) \;=\; 2 \cdot 2(g_C - 1) \;=\; 8
+  \;\;\implies\;\; g_{D_\eta} = 5.
+\]
+The covering involution $\sigma$ acts on $\Jac(D_\eta)$, and the
+\emph{Prym variety} is the connected component of the kernel of the trace
+map,
+\[
+  P(D_\eta / C) \;:=\; \bigl(\ker \Nm_\pi\bigr)^0 \;\subset\; \Jac(D_\eta).
+\]
+It is a $(g_{D_\eta} - g_C) = 2$-dimensional principally polarized abelian
+variety (the principal polarization is half the restriction of the canonical
+polarization on $\Jac(D_\eta)$, the special fact about \'etale double covers
+due to Mumford).
+
+References: \cite{Mumford1974,Beauville1977,Donagi1992}.
+
+For a generic curve of genus $\le 5$, the Prym map
+$\Rr_g \to \Aa_{g-1}$ is dominant; for $g = 3$ the source has dimension
+$\dim \Mm_3 + 6 = 12$ and the target $\Aa_2$ has dimension $3$, so generic
+fibres have dimension $9$.
+
+\begin{theorem}[Wirtinger / Recillas / Verra / Dolgachev]
+Let $C \subset \Pp^2$ be a smooth plane quartic, $\eta \in J(C)[2] \setminus \{0\}$,
+and $\pi \colon D_\eta \to C$ the corresponding \'etale double cover. Then
+$P(D_\eta / C)$ is the Jacobian of a smooth genus-2 curve $\Hh_\eta$, and
+$\Hh_\eta$ can be realised explicitly as the discriminant curve
+$y^2 = -\det M(t)$ of any pencil $M(t)$ of $3 \times 3$ symmetric matrices
+constructed from any pair-of-pairs in the Steiner complex $S_\eta$.
+\end{theorem}
+
+References: \cite{Wirtinger1895,Recillas1974,Beauville1977,Verra1987,Dolgachev2012}.
+
+In other words: \emph{the genus-2 curves produced by} \texttt{steiner.m}
+\emph{and} \texttt{steiner\_genus2.m} \emph{are exactly the 63 Prym varieties}
+of the \'etale double covers of $C$, presented as Jacobians of explicit
+genus-2 curves. Different choices of pair-of-pairs within the same Steiner
+complex give the same genus-2 curve (up to isomorphism), reflecting the
+well-definedness of the Prym.
+
+%==========================================================================
+\section{Splitting the Prym: elliptic factors via the $\Z/3$ trick}
+\label{sec:elliptic-factors}
+%==========================================================================
+
+A 2-dimensional ppav $A$ is either irreducible or $(2,2)$-isogenous to a
+product $E_1 \times E_2$ of elliptic curves. When $A = J(\Hh)$ for a
+genus-2 hyperelliptic curve, one tests for an elliptic decomposition by
+looking for an order-3 automorphism of $\Pp^1$ that \emph{permutes the 6
+Weierstrass points} of $\Hh$.
+
+Concretely: an order-3 M\"obius transformation has two fixed points and
+partitions the remaining points into orbits of size $3$. If the 6 Weierstrass
+points $\{p_1, \ldots, p_6\}$ split as a single $\Z/3$-orbit of length 3
+plus another orbit of length 3 (no fixed Weierstrass points), then this
+$\Z/3$ action descends to a degree-3 map $\Hh \to E$ onto an elliptic curve,
+and the second elliptic factor $E'$ is the quotient by the genus-2
+hyperelliptic involution.
+
+In the script \texttt{FindOrbit}, this is implemented as: for each ordered
+triple $(p_a, p_b, p_c)$ of Weierstrass points, apply the unique M\"obius
+transformation sending $(p_a, p_b, p_c) \mapsto (0, 1, \infty)$, then check
+whether the images of the remaining three points form a $\Z/3$-orbit
+$\{x, 1 - 1/x, 1/(1 - x)\}$ --- these are the cyclic permutations of the
+generic cross-ratio under the order-3 element of the anharmonic group
+$S_3 \subset \PGL_2$ acting on cross-ratios.
+
+When such an $x$ is found, the cross-ratio $\lambda = x$ identifies the
+elliptic curve via the standard formula
+\[
+  j(E) \;=\; 256 \cdot \frac{(1 - s(1-s))^3}{s^2 (1-s)^2},
+  \qquad
+  s \;=\; (1 - \lambda) \bigl(\lambda + \sqrt{\lambda^2 - \lambda + 1}\bigr)^2.
+\]
+(The intermediate variable $s$ comes from a 2-isogeny normalisation --- with
+the square root, the formula returns the $j$-invariant of one of the two
+isogeny factors of the $(2,2)$-decomposition.)
+
+For the Klein-twist case \texttt{C\_twist}, this returns the $j$-invariants
+documented in \texttt{check\_isogeny*.m} and in
+\texttt{klein\_steiner\_pryms.md}:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4cm} c >{\raggedright\arraybackslash}p{4.5cm} >{\raggedright\arraybackslash}p{4cm}}
+\toprule
+$\PSL(2,7)$ orbit & Arf & min poly of $j$ over $\Q$ & splitting \\
+\midrule
+size 28 (azygetic, ``bitangent class'') & odd
+  & $v^2 + 13856 v - 26578688$
+  & $\Q(\sqrt 7)$, $j = -6928 \pm 3264 \sqrt 7$ \\
+size $7+7$ (syzygetic, conjugate pair) & even
+  & $v^4 - 103439 v^3 + 6670405329 v^2 + \cdots$
+  & irreducible$/\Q$, splits as $\mathrm{mp}_2 \cdot \mathrm{mp}_3$ over $\Q(\sqrt{-7})$ \\
+size 21 (syzygetic) & even
+  & not separately recorded
+  & re-derive from \texttt{steiner.m} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The script \texttt{check\_isogeny\_correct.m} then proves rigorously, via
+the CM-field criterion (the squarefree part of $a_p^2 - 4 p$ for ordinary
+reduction), that the elliptic factors from different $\PSL(2,7)$ orbits are
+not $\overline\Q$-isogenous, and that none of them is the curve
+$E = \texttt{49a1}$ that appears in $J(C_{\mathrm{twist}}) \cong E^3$.
+
+%==========================================================================
+\section{End-to-end pipeline summary}
+%==========================================================================
+
+Given a smooth plane quartic $F(x, y, z) \in k[x, y, z]_4$:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c >{\raggedright\arraybackslash}p{4.4cm} >{\raggedright\arraybackslash}p{4.0cm} >{\raggedright\arraybackslash}p{4.0cm}}
+\toprule
+Step & Object & Code & Math \\
+\midrule
+0 & reduce mod good prime $p$ & search loop & smoothness check \\
+1 & 28 bitangents over $\F_p$ (later over $K \supset \Q$)
+  & \texttt{FindBitangentsFp}, tangency ideal + elimination
+  & odd theta characteristics \S\ref{sec:bitangents} \\
+2 & 63 Steiner complexes
+  & function-field $J[2]$ classes of $L_i / L_{\mathrm{ref}}$, via \texttt{ClassJ2}
+  & Steiner complexes \S\ref{sec:steiner} \\
+3 & witnessing conic $Q$ for each pair-of-pairs
+  & $12 \times 10$ linear system (\texttt{FindConic})
+  & contact conic \S\ref{sec:quartic-decomp} \\
+4 & scalars $a, b$ in $a F = L_i L_j L_k L_l + b Q^2$
+  & nullspace of $3 \times 15$ coefficient matrix
+  & quartic decomposition \S\ref{sec:quartic-decomp} \\
+5 & symmetric pencil $M(t) = M_1 + 2 t M_2 + t^2 M_3$
+  & \texttt{MakeGenus2}
+  & linear system of conics \S\ref{sec:pencil} \\
+6 & genus-2 curve $\Hh : y^2 = -\det M(t)$
+  & \texttt{HyperellipticCurve}
+  & Prym = Jacobian \S\ref{sec:prym} \\
+7 & Igusa invariants and (when $(2,2)$-reducible) elliptic factor $j$-invariants
+  & \texttt{IgusaInvariants}, \texttt{FindOrbit}
+  & $\Z/3$ on Weierstrass points \S\ref{sec:elliptic-factors} \\
+8 & rigorous (non-)isogeny among elliptic factors
+  & \texttt{check\_isogeny\_correct.m}
+  & CM-field criterion (squarefree part of $a_p^2 - 4p$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The general-purpose drivers \texttt{steiner\_genus2.m} and
+\texttt{hensel\_decomp.m} accept any smooth plane quartic over $\Q$ as
+input. \texttt{steiner\_edge.m} is hardcoded to the Edge quartic
+$25(x^4 + y^4 + z^4) - 34(x^2 y^2 + x^2 z^2 + y^2 z^2)$ (an $S_4$-symmetric
+quartic with all 28 bitangents real over $\Q$); \texttt{steiner.m} is the
+legacy predecessor hardcoded to \texttt{C\_twist}.
+
+%==========================================================================
+\begin{thebibliography}{99}
+%==========================================================================
+
+\bibitem{Arf1941}
+C.~Arf, \emph{Untersuchungen \"uber quadratische Formen in K\"orpern der
+Charakteristik 2 (Teil I)}, J.~Reine Angew.\ Math.\ \textbf{183} (1941),
+148--167.
+
+\bibitem{Atiyah1971}
+M.~F.~Atiyah, \emph{Riemann surfaces and spin structures}, Ann.\ Sci.
+\'Ecole Norm.\ Sup.\ (4) \textbf{4} (1971), 47--62.
+
+\bibitem{Beauville1977}
+A.~Beauville, \emph{Vari\'et\'es de Prym et jacobiennes interm\'ediaires},
+Ann.\ Sci.\ \'Ecole Norm.\ Sup.\ (4) \textbf{10} (1977), 309--391.
+
+\bibitem{CaporasoSernesi2003}
+L.~Caporaso and E.~Sernesi, \emph{Recovering plane curves from their
+bitangents}, J.\ Algebraic Geom.\ \textbf{12} (2003), 225--244.
+
+\bibitem{Dolgachev2012}
+I.~Dolgachev, \emph{Classical Algebraic Geometry: A Modern View}, Cambridge
+Univ.\ Press, 2012.
+
+\bibitem{DolgachevOrtland1988}
+I.~Dolgachev and D.~Ortland, \emph{Point sets in projective spaces and theta
+functions}, Ast\'erisque \textbf{165} (1988).
+
+\bibitem{Donagi1992}
+R.~Donagi, \emph{The fibers of the Prym map}, in: Curves, Jacobians, and
+Abelian Varieties (Amherst, MA, 1990), Contemp.\ Math.\ \textbf{136}, AMS,
+1992, pp.~55--125.
+
+\bibitem{Mumford1971}
+D.~Mumford, \emph{Theta characteristics of an algebraic curve}, Ann.\ Sci.
+\'Ecole Norm.\ Sup.\ (4) \textbf{4} (1971), 181--192.
+
+\bibitem{Mumford1974}
+D.~Mumford, \emph{Prym varieties I}, in: \emph{Contributions to Analysis}
+(L.~Ahlfors et al., eds.), Academic Press, 1974, pp.~325--350.
+
+\bibitem{Recillas1974}
+S.~Recillas, \emph{Jacobians of curves with $g^1_4$'s are the Pryms of
+trigonal curves}, Bol.\ Soc.\ Mat.\ Mexicana (2) \textbf{19} (1974), 9--13.
+
+\bibitem{Riemann1857}
+B.~Riemann, \emph{Theorie der Abel'schen Functionen}, J.~Reine Angew.\
+Math.\ \textbf{54} (1857), 115--155; reprinted in
+\emph{Gesammelte Mathematische Werke} (1876).
+
+\bibitem{Salmon1879}
+G.~Salmon, \emph{A Treatise on the Higher Plane Curves}, 3rd ed., Hodges,
+Foster, and Figgis, 1879.
+
+\bibitem{Verra1987}
+A.~Verra, \emph{The fibre of the Prym map in genus three}, Math.\ Ann.\
+\textbf{276} (1987), 433--448.
+
+\bibitem{Wirtinger1895}
+W.~Wirtinger, \emph{Untersuchungen \"uber Thetafunctionen}, Teubner,
+Leipzig, 1895.
+
+\end{thebibliography}
+
+\end{document}
