@@ -1,8 +1,9 @@
 # From bitangents to genus-2 Pryms: the math behind the pipeline
 
 This note documents the algebraic geometry implemented in
-`steiner_genus2.m`, `steiner.m`, `steiner_edge.m`, `hensel_decomp.m`, and the
-`check_isogeny*.m` family. It explains how the 28 bitangents of a smooth plane
+`steiner_pipeline.m` (driven by `tests.m`), the Hensel-lift experiment
+`hensel_decomp.m`, and `check_isogeny_correct.m`. It explains how the 28
+bitangents of a smooth plane
 quartic, the 63 Steiner complexes, the quartic decomposition formula
 $aF = L_iL_jL_kL_l + bQ^2$, and the determinantal pencil that produces
 genus-2 curves all fit together — and why the resulting genus-2 curves are
@@ -249,7 +250,7 @@ action on the 28 odd characteristics.
 ### 4.1 Computing $\eta_{ij}$ in Magma: the $J[2]$ class, not $J/2J$
 
 In the code: the function field of $C$ over $\mathbb F_p$ is constructed in
-`steiner_genus2.m`. For each bitangent line $L_i$, the script forms the
+`steiner_pipeline.m` STEP 1. For each bitangent line $L_i$, the script forms the
 function $L_i / L_{\mathrm{ref}} \in k(C)$, takes
 $$ \tfrac12 \operatorname{div}\!\bigl(L_i / L_{\mathrm{ref}}\bigr) \;\in\; \operatorname{Pic}^0(C), $$
 which is well-defined exactly because $L_i$ is bitangent (all valuations
@@ -280,7 +281,7 @@ bundle*, so `ClassJ2` is the correct primitive.
 
 Pairs $\{i,j\}$ are then binned by the $J[2]$ class $\eta_i - \eta_j$ to
 recover the 63 complexes (each with 6 pairs, verified by the assertions
-`nclasses eq 63` and `s eq 6` in `steiner_genus2.m`).
+`nclasses eq 63` and `s eq 6` in `steiner_pipeline.m`).
 
 ### 4.2 Even vs. odd $\eta$, and the parity of the complex
 
@@ -315,18 +316,35 @@ identity is:
 **Theorem.** *There exists a conic $Q \in H^0(\mathbb P^2, \mathcal O(2))$
 and scalars $a, b \in k$ (not both zero) such that*
 $$ a\,F \;=\; L_i\,L_j\,L_k\,L_l \;+\; b\,Q^2. \tag{$\star$} $$
-*The conic $Q$ is the unique (up to scalar) **contact conic** that is
-tangent to $C$ at the eight contact points $\{P_i,P_j,P_k,P_l\}$ of the four
-bitangents.*
+*The conic $Q$ is the unique (up to scalar) conic in $\mathbb P^2$ that
+**passes through** the eight contact points
+$\{P_i, P_i', P_j, P_j', P_k, P_k', P_l, P_l'\}$
+of the four bitangents $L_i, L_j, L_k, L_l$ (where
+$L_m \cdot C = 2 P_m + 2 P_m'$). The intersection $Q \cap C$ is precisely
+these eight points, each with multiplicity one — so $Q$ is a conic
+**through** the eight contact points, not a conic tangent to $C$ there.*
 
 References: [Salmon 1879, §220], [Dolgachev 2012, Prop. 6.1.7],
 [Caporaso–Sernesi 2003] for a modern reconstruction perspective.
 
-The geometric content of $(\star)$ is: cutting out $Q^2 = 0$ on $C$ gives the
-divisor $2(P_i + P_j + P_k + P_l)$, which equals the divisor cut by
-$L_iL_jL_kL_l$ on $C$ (each line contributes $2P_m$). Both sides therefore
-give effective representatives of $4 K_C$, and $(\star)$ is the unique
-linear relation between $L_iL_jL_kL_l$, $Q^2$, and $F$ in degree 4.
+The geometric content of $(\star)$ is a divisor identity on $C$. Each
+bitangent $L_m$ cuts $C$ in $2(P_m + P_m')$, so
+$$
+\operatorname{div}(L_iL_jL_kL_l)\big|_C
+\;=\; 2\bigl(P_i + P_i' + P_j + P_j' + P_k + P_k' + P_l + P_l'\bigr)
+\;\in\; |4 K_C|,
+$$
+a divisor of degree 16 supported on 8 distinct points, each with
+multiplicity 2. Since $aF|_C = 0$, the relation $(\star)$ forces
+$\operatorname{div}(Q^2)|_C$ to equal the same divisor, so
+$$
+\operatorname{div}(Q)\big|_C \;=\; P_i + P_i' + P_j + P_j' + P_k + P_k' + P_l + P_l',
+$$
+a degree-8 divisor in $|2K_C|$ — exactly the (unique up to scalar) conic
+through the 8 contact points, with **multiplicity one at each**. That $Q$
+has a double zero on each pair $(P_m, P_m')$ in the expression
+$b Q^2 = -L_iL_jL_kL_l$ is an artifact of squaring, not of $Q$ being tangent
+to $C$.
 
 In the code, two linear-algebra steps implement this:
 
@@ -387,7 +405,9 @@ has 6 Weierstrass points (or 5 + the point at infinity when $\det$ has
 degree 5), hence genus
 $$ g(\mathcal H) \;=\; \tfrac{6 - 2}{2} \;=\; 2. $$
 
-This is the function `MakeGenus2` in `steiner_genus2.m` and `steiner.m`.
+This is the function `MakeGenus2` (for the $\mathbb F_p$ cross-check) and the
+inline determinantal-pencil block inside `TryMakeGenus2` (for the $K$ pipeline)
+in `steiner_pipeline.m`.
 
 ---
 
@@ -426,8 +446,8 @@ constructed from any pair of pairs in the Steiner complex $S_\eta$.*
 References: [Wirtinger 1895], [Recillas 1974], [Beauville 1977, §6],
 [Verra 1987], [Dolgachev 2012, §5.5].
 
-In other words: **the genus-2 curves produced by `steiner.m` and
-`steiner_genus2.m` are exactly the 63 Prym varieties** of the étale double
+In other words: **the genus-2 curves produced by `steiner_pipeline.m` are
+exactly the 63 Prym varieties** of the étale double
 covers of $C$, presented as Jacobians of explicit genus-2 curves. Different
 choices of pair-of-pairs within the same Steiner complex give *the same*
 genus-2 curve (up to isomorphism), reflecting the well-definedness of the
@@ -475,13 +495,13 @@ with the square root, the formula returns the j-invariant of one of the two
 isogeny factors of the (2,2)-decomposition.)
 
 For the Klein-twist case `C_twist`, this returns the j-invariants documented
-in `check_isogeny*.m` and in the project memory `klein_steiner_pryms.md`:
+in `check_isogeny_correct.m` and in the project memory `klein_steiner_pryms.md`:
 
 | PSL(2,7) orbit on Steiner complexes | Arf type | min poly of $j$ over $\mathbb Q$ | splitting |
 | --- | --- | --- | --- |
 | size 28 (azygetic, "bitangent class") | odd | $v^2 + 13856v - 26578688$ | $\mathbb Q(\sqrt{7})$, $j = -6928 \pm 3264 \sqrt 7$ |
 | size $7+7$ (syzygetic, conjugate pair) | even | $v^4 - 103439 v^3 + 6670405329 v^2 + \cdots$ | irreducible$/\mathbb Q$, splits as $\mathrm{mp}_2 \cdot \mathrm{mp}_3$ over $\mathbb Q(\sqrt{-7})$ |
-| size 21 (syzygetic) | even | not separately recorded | re-derive from `steiner.m` |
+| size 21 (syzygetic) | even | not separately recorded | re-derive from `steiner_pipeline.m` |
 
 The script `check_isogeny_correct.m` then proves rigorously, via the CM-field
 criterion (the squarefree part of $a_p^2 - 4p$ for ordinary reduction), that
@@ -495,24 +515,24 @@ $E = \texttt{49a1}$ that appears in $J(C_{\mathrm{twist}}) \cong E^3$.
 
 Given a smooth plane quartic $F(x,y,z) \in k[x,y,z]_4$:
 
+All references below are to `steiner_pipeline.m` unless noted otherwise.
+
 | Step | Object | Code | Math |
 | --- | --- | --- | --- |
 | 0 | reduce mod good prime $p$ | search loop | smoothness check |
 | 1 | 28 bitangents over $\mathbb F_p$ (later over $K \supset \mathbb Q$) | `FindBitangentsFp`, tangency ideal + elimination | odd theta characteristics §3 |
 | 2 | $63$ Steiner complexes | function-field $J[2]$ classes of $L_i/L_{\mathrm{ref}}$, via `ClassJ2` | Steiner complexes §4 |
-| 3 | witnessing conic $Q$ for each pair-of-pairs | $12 \times 10$ linear system (`FindConic`) | contact conic §5 |
+| 3 | witnessing conic $Q$ for each pair-of-pairs | $12 \times 10$ linear system (`FindConic`) | conic through 8 contact points §5 |
 | 4 | scalars $a, b$ in $aF = L_iL_jL_kL_l + bQ^2$ | nullspace of $3 \times 15$ coefficient matrix | quartic decomposition §5 |
-| 5 | symmetric pencil $M(t) = M_1 + 2tM_2 + t^2 M_3$ | `MakeGenus2` | linear system of conics §6 |
+| 5 | symmetric pencil $M(t) = M_1 + 2tM_2 + t^2 M_3$ | `MakeGenus2` / `TryMakeGenus2` | linear system of conics §6 |
 | 6 | genus-2 curve $\mathcal H : y^2 = -\det M(t)$ | `HyperellipticCurve` | Prym = Jacobian §7 |
 | 7 | Igusa invariants and (when (2,2)-reducible) elliptic factor j-invariants | `IgusaInvariants`, `FindOrbit` | $\mathbb Z/3$ on Weierstrass points §8 |
 | 8 | rigorous (non-)isogeny among elliptic factors | `check_isogeny_correct.m` | CM-field criterion (squarefree part of $a_p^2 - 4p$) |
 
-The general-purpose drivers `steiner_genus2.m` and `hensel_decomp.m` accept
-any smooth plane quartic over $\mathbb Q$ as input. `steiner_edge.m` is
-hardcoded to the Edge quartic
-$25(x^4+y^4+z^4) - 34(x^2y^2+x^2z^2+y^2z^2)$ (an $S_4$-symmetric quartic
-with all 28 bitangents real over $\mathbb Q$); `steiner.m` is the legacy
-predecessor hardcoded to `C_twist`.
+`steiner_pipeline.m` accepts any smooth plane quartic over $\mathbb Q$ via
+`tests.m` (edit the `tests` sequence to add a new curve). `hensel_decomp.m` is
+a separate standalone Hensel-lift experiment for quadric decompositions
+hardcoded to the Klein quartic.
 
 ---
 

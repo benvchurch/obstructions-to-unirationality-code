@@ -1,0 +1,5 @@
+Steiner / Prym pipeline runs -- 3 curves
+
+[OK]   klein_twist      CPU 5.7s  log=results/klein_twist.log
+[OK]   fermat           CPU 12.1s  log=results/fermat.log
+[OK]   edge             CPU 4.2s  log=results/edge.log

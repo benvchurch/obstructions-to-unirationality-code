@@ -423,20 +423,37 @@ There exists a conic $Q \in H^0(\Pp^2, \Oo(2))$ and scalars $a, b \in k$
 \begin{equation}\label{eq:star}
   a F \;=\; L_i L_j L_k L_l \;+\; b Q^2.
 \end{equation}
-The conic $Q$ is the unique (up to scalar) \emph{contact conic} that is
-tangent to $C$ at the eight contact points $\{P_i, P_j, P_k, P_l\}$ of the
-four bitangents.
+The conic $Q$ is the unique (up to scalar) conic in $\Pp^2$ that
+\emph{passes through} the eight contact points
+$\{P_i, P_i', P_j, P_j', P_k, P_k', P_l, P_l'\}$ of the four bitangents
+$L_i, L_j, L_k, L_l$ (where $L_m \cdot C = 2 P_m + 2 P_m'$). The
+intersection $Q \cap C$ is precisely these eight points, each with
+multiplicity one --- so $Q$ is a conic \emph{through} the eight contact
+points, not a conic tangent to $C$ there.
 \end{theorem}
 
 References: \cite[\S 220]{Salmon1879}, \cite[Prop.\ 6.1.7]{Dolgachev2012},
 and \cite{CaporasoSernesi2003} for a modern reconstruction perspective.
 
-The geometric content of \eqref{eq:star} is: cutting out $Q^2 = 0$ on $C$
-gives the divisor $2(P_i + P_j + P_k + P_l)$, which equals the divisor cut
-by $L_i L_j L_k L_l$ on $C$ (each line contributes $2 P_m$). Both sides
-therefore give effective representatives of $4 K_C$, and \eqref{eq:star} is
-the unique linear relation between $L_i L_j L_k L_l$, $Q^2$, and $F$ in
-degree $4$.
+The geometric content of \eqref{eq:star} is a divisor identity on $C$. Each
+bitangent $L_m$ cuts $C$ in $2(P_m + P_m')$, so
+\[
+  \mathrm{div}(L_i L_j L_k L_l)\big|_C
+  \;=\; 2\bigl(P_i + P_i' + P_j + P_j' + P_k + P_k' + P_l + P_l'\bigr)
+  \;\in\; |4 K_C|,
+\]
+a divisor of degree $16$ supported on $8$ distinct points, each with
+multiplicity $2$. Since $aF|_C = 0$, the relation \eqref{eq:star} forces
+$\mathrm{div}(Q^2)|_C$ to equal the same divisor, so
+\[
+  \mathrm{div}(Q)\big|_C
+  \;=\; P_i + P_i' + P_j + P_j' + P_k + P_k' + P_l + P_l',
+\]
+a degree-$8$ divisor in $|2 K_C|$ --- exactly the (unique up to scalar)
+conic through the $8$ contact points, with \emph{multiplicity one at each}.
+That $Q$ has a double zero on each pair $(P_m, P_m')$ inside the expression
+$b Q^2 = -L_i L_j L_k L_l$ is an artifact of squaring, not of $Q$ being
+tangent to $C$.
 
 In the code, two linear-algebra steps implement this:
 \begin{enumerate}
@@ -646,7 +663,7 @@ Step & Object & Code & Math \\
   & Steiner complexes \S\ref{sec:steiner} \\
 3 & witnessing conic $Q$ for each pair-of-pairs
   & $12 \times 10$ linear system (\texttt{FindConic})
-  & contact conic \S\ref{sec:quartic-decomp} \\
+  & conic through $8$ contact points \S\ref{sec:quartic-decomp} \\
 4 & scalars $a, b$ in $a F = L_i L_j L_k L_l + b Q^2$
   & nullspace of $3 \times 15$ coefficient matrix
   & quartic decomposition \S\ref{sec:quartic-decomp} \\

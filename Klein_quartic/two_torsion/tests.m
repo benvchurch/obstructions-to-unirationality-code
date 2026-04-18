@@ -1,14 +1,14 @@
 /*******************************************************************************
  * tests.m
  *
- * Driver: runs steiner_pipeline.m's RunSteinerPipeline procedure on each
+ * Driver: runs steiner_computations.m's RunSteinerPipeline procedure on each
  * quartic in the list `tests` below. Each run's full Magma output is written
  * to results/<label>.log; a one-line summary is appended to results/SUMMARY.txt.
  *
  * To add a new curve: append <"label", quartic_form> to the `tests` sequence.
  ******************************************************************************/
 
-load "steiner_pipeline.m";
+load "steiner_computations.m";
 
 QQ := Rationals();
 P2Q<x,y,z> := ProjectiveSpace(QQ, 2);
