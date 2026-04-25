@@ -118,7 +118,7 @@ triples are collinear, exactly 1/5 of all triples.
 | 2 | (-224208w^3 + 224208w + 344408, ...) | 16 | S_3 | 0 | Q(√2) |
 | 3 | (224208w^3 - 224208w + 344408, ...) | 16 | S_3 | 0 | Q(√2) |
 | 4 | (8388608, 245760, 4096) | 6 | (Z/2)^2 | 4 | Q |
-| 5 | (50000, 3750, -125) | 1 | D_6 | 0 | Q |
+| 5 | (50000, 3750, -125) | 1 | S_4 | 0 | Q |
 
 **Total:** 63 = 24 + 16 + 16 + 6 + 1.  Classes 2 and 3 are Galois conjugate
 over Q; each orbit is individually well-defined over Q(√2) since the Igusa
@@ -144,14 +144,13 @@ stabilizes each complex with a subgroup of order ≥ 4, inducing extra involutio
 
 | Igusa class | RA ⊇ | Lambda min poly | Elliptic j (Z/2 quotient) | Complex indices |
 |-------------|-------|-----------------|---------------------------|-----------------|
-| 5: (50000, 3750, -125) | D_6 | t^2 + 1 | j = 8000 | 34 |
+| 5: (50000, 3750, -125) | S_4 | t^2 + 1 | j = 8000 | 34 |
 | 4: (8388608, 245760, 4096) | (Z/2)^2 | t^2 - 1/2 | j = 128 | 3, 4, 38, 40, 62, 63 |
 
 **Class 5 (the unique complex #34):** This is the most special Prym of the Fermat quartic.
-It has BOTH Z/3 (j_Z3 = 8000, CM by Z[sqrt(-2)]) AND (Z/2)^2 (j_Z2 = 8000).
-**The Z/2 and Z/3 quotients give the same elliptic curve** (j = 8000).
-Lambda = i, so the branch points in normal form are {0, 1, -1, i, -i, infinity}: the
-involution x -> 1/x fixes ±1 and swaps 0 <-> infinity, i <-> -i.
+It has RA = S_4: the branch points {0, 1, -1, i, -i, infinity} admit the full
+symmetric group of Mobius transformations.  The Z/2 and Z/3 quotients give the
+**same** elliptic curve (j = 8000, CM by Z[sqrt(-2)]).
 
 **Class 4 (all 6 members have (Z/2)^2):** Geometric full Aut = D_4 (order 8), J ~ E x E where
 Lambda min poly t^2 - 1/2 (lambda = 1/sqrt(2)).  **The Z/2 quotient gives j = 128**,
@@ -330,8 +329,7 @@ A striking pattern across all three quartics: **Z/3 and (Z/2)^2 are nearly compl
 - **Klein twist:** Classes 1, 3, 4 have RA ⊇ S_3 (Z/3 but not (Z/2)^2).  Class 2
   (21 members) has RA ⊇ (Z/2)^2 but no Z/3.
 - **Fermat:** Classes 2, 3 have RA ⊇ S_3 (Z/3 but not (Z/2)^2).  Class 4 has
-  RA ⊇ (Z/2)^2 but no Z/3.  Only class 5 (the unique singleton) has RA ⊇ D_6
-  (both Z/3 and (Z/2)^2).
+  RA ⊇ (Z/2)^2 but no Z/3.  Class 5 (the unique singleton) has RA = S_4.
 - **Edge:** Class 9 has RA ⊇ (Z/2)^2 but no Z/3.  Classes 7, 10 have RA ⊇ S_3
   (Z/3 but not (Z/2)^2).  Only class 6 (j = 54000, CM by sqrt(-3)) has RA ⊇ D_6.
 
