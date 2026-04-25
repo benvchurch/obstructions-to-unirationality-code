@@ -1320,18 +1320,18 @@ for cl in inv_classes do
 end for;
 
 // =====================================================================
-// STEP 9b: Syzygetic triples within Igusa classes
+// STEP 9b: Collinear triples within Igusa classes
 // =====================================================================
-// Three nonzero J[2] elements x,y,z are syzygetic iff x+y+z = 0 in F_2^6.
-// For each Igusa isomorphism class, count unordered syzygetic triples
+// Three nonzero J[2] elements x,y,z are collinear iff x+y+z = 0 in F_2^6.
+// For each Igusa isomorphism class, count unordered collinear triples
 // among the complexes sharing that class.
 
-print "\n=== Syzygetic triples within Igusa classes ===";
+print "\n=== Collinear triples within Igusa classes ===";
 for cl in inv_classes do
     cls_members := Sort([ci : ci in Keys(abs_inv_K) | abs_inv_K[ci] eq cl]);
     n_cls := #cls_members;
-    syz_count := 0;
-    syz_triples := [];
+    col_count := 0;
+    col_triples := [];
     for a in [1..n_cls] do
         for b in [a+1..n_cls] do
             for c in [b+1..n_cls] do
@@ -1339,14 +1339,14 @@ for cl in inv_classes do
                 kj := steiner_data[cls_members[b]][3];
                 kk := steiner_data[cls_members[c]][3];
                 if &and[(ki[m] + kj[m] + kk[m]) mod 2 eq 0 : m in [1..#ki]] then
-                    syz_count +:= 1;
-                    Append(~syz_triples, [cls_members[a], cls_members[b], cls_members[c]]);
+                    col_count +:= 1;
+                    Append(~col_triples, [cls_members[a], cls_members[b], cls_members[c]]);
                 end if;
             end for;
         end for;
     end for;
-    printf "  j = %o (%o complexes): %o syzygetic triples\n", cl, n_cls, syz_count;
-    for tr in syz_triples do
+    printf "  j = %o (%o complexes): %o collinear triples\n", cl, n_cls, col_count;
+    for tr in col_triples do
         printf "    {%o, %o, %o}\n", tr[1], tr[2], tr[3];
     end for;
 end for;

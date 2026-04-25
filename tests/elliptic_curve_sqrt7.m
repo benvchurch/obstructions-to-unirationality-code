@@ -130,6 +130,13 @@ end function;
 print_traces(E, 100);
 
 // Extend to Q(sqrt(7), i) and compute torsion
+
 K_i := ext<K | PolynomialRing(K)![1, 0, 1]>;
 E_i := BaseChange(E, K_i);
 TorsionSubgroup(E_i);
+
+R<x> := PolynomialRing(K); 
+p := Factorization(x^16 - 7*x^12 + 16*x^8 - 7*x^4 + 1);
+K4<a> := ext<K | p[1][1]>;
+E4 := BaseChange(E, K4);
+TorsionSubgroup(E4);

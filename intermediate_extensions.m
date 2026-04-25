@@ -77,7 +77,7 @@ IntermediateMonodromy := function(G, seq, H) // G is the group, seq is the seque
     H_seq_conj := [H ! h : h in H_seq_conj];
     H_seq_conj := [h : h in H_seq_conj | h ne Id(H)];
     cl := ClassMap(H);
-    [cl(h) : h in H_seq_conj];
+    _ := [cl(h) : h in H_seq_conj];
     reps := SphGensUptoConj(H, H_seq_conj : UseElements := true);
     reps := SetToSequence(reps);
     

@@ -24,10 +24,9 @@ For each isomorphism class we also report:
   This is a consequence of the large automorphism groups: the stabilizer of
   any Steiner complex in Aut(C) is nontrivial and induces non-hyperelliptic
   automorphisms of the Prym.
-- **Syzygetic triples:** Among the Steiner complexes producing a given isomorphism
-  class, we count unordered triples {x, y, z} with x + y + z = 0 in J[2] (the
-  "syzygetic" condition).  These triples are significant because syzygetic elements
-  correspond to compatible decompositions of the quartic.
+- **Collinear triples:** Among the Steiner complexes producing a given isomorphism
+  class, we count unordered triples {x, y, z} with x + y + z = 0 in J[2] (i.e.,
+  collinear in the F₂-projective space PG(5, F₂)).
 
 ---
 
@@ -39,14 +38,14 @@ For each isomorphism class we also report:
 
 **Aut(C):** PSL(2,7) (order 168) | **J[2] module:** V + V* (semisimple, two irreducible 3-dim summands)
 
-### Igusa classes, extra symmetries, and syzygetic triples
+### Igusa classes, extra symmetries, and collinear triples
 
-| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Syz. triples |
-|---|----------------------------------------|-------|------|--------------|
-| 1 | (2048, -192, 64) | 28 | S_3 | 56 |
-| 2 | (2048/343, 4416/343, -2816/343) | 21 | (Z/2)^2 | 28 |
-| 3 | (-76740102w - 95211256, -3674430w - 3245592, 39906w - 728) /343 | 7 | S_3 | 7 |
-| 4 | (76740102w + 96638999, 3674430w + 5940483, -39906w - 100493) /343 | 7 | S_3 | 7 |
+| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Coll. triples | Orbit field |
+|---|----------------------------------------|-------|------|--------------|-------------|
+| 1 | (2048, -192, 64) | 28 | S_3 | 56 | Q |
+| 2 | (2048/343, 4416/343, -2816/343) | 21 | (Z/2)^2 | 28 | Q |
+| 3 | (-76740102w - 95211256, -3674430w - 3245592, 39906w - 728) /343 | 7 | S_3 | 7 | Q(√-7) |
+| 4 | (76740102w + 96638999, 3674430w + 5940483, -39906w - 100493) /343 | 7 | S_3 | 7 | Q(√-7) |
 
 **Total:** 63 = 28 + 21 + 7 + 7.  Classes 3 and 4 are Galois conjugate over Q.
 
@@ -95,11 +94,11 @@ Z/3 still holds: classes 1, 3, 4 have Z/3, while class 2 does not.
 | 3 (conj. pair) | 7 | 7 | 7/35 | {6,16,41}, {6,19,33}, {6,23,42}, {16,19,42}, {16,23,33}, {19,23,41}, {33,41,42} |
 | 4 (conj. pair) | 7 | 7 | 7/35 | {12,14,36}, {12,31,50}, {12,44,54}, {14,31,54}, {14,44,50}, {31,36,44}, {36,50,54} |
 
-**Observation:** Classes 3 and 4 each have the maximum possible number of syzygetic
+**Observation:** Classes 3 and 4 each have the maximum possible number of collinear
 triples for 7 elements: C(7,3)/C(7,3) is not the right comparison -- rather, 7
-elements in F_2^6 forming 7 = C(7,3)/5 syzygetic triples means every triple from
-this 7-element set that is syzygetic has been counted.  In fact 7 out of C(7,3)=35
-triples are syzygetic, exactly 1/5 of all triples.
+elements in F_2^6 forming 7 = C(7,3)/5 collinear triples means every triple from
+this 7-element set that is collinear has been counted.  In fact 7 out of C(7,3)=35
+triples are collinear, exactly 1/5 of all triples.
 
 ---
 
@@ -111,17 +110,19 @@ triples are syzygetic, exactly 1/5 of all triples.
 
 **Aut(C):** order 96 (C_4^2 : C_3 : C_2) | **J[2] module:** uniserial 6-dim, comp factors 1,2,2,1 (not semisimple)
 
-### Igusa classes, extra symmetries, and syzygetic triples
+### Igusa classes, extra symmetries, and collinear triples
 
-| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Syz. triples |
-|---|----------------------------------------|-------|------|--------------|
-| 1 | (131072, 6144, -512) | 24 | Z/2 | 64 |
-| 2 | (-224208w^3 + 224208w + 344408, ...) | 16 | S_3 | 0 |
-| 3 | (224208w^3 - 224208w + 344408, ...) | 16 | S_3 | 0 |
-| 4 | (8388608, 245760, 4096) | 6 | (Z/2)^2 | 4 |
-| 5 | (50000, 3750, -125) | 1 | D_12 | 0 |
+| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Coll. triples | Orbit field |
+|---|----------------------------------------|-------|------|--------------|-------------|
+| 1 | (131072, 6144, -512) | 24 | Z/2 | 64 | Q |
+| 2 | (-224208w^3 + 224208w + 344408, ...) | 16 | S_3 | 0 | Q(√2) |
+| 3 | (224208w^3 - 224208w + 344408, ...) | 16 | S_3 | 0 | Q(√2) |
+| 4 | (8388608, 245760, 4096) | 6 | (Z/2)^2 | 4 | Q |
+| 5 | (50000, 3750, -125) | 1 | D_6 | 0 | Q |
 
-**Total:** 63 = 24 + 16 + 16 + 6 + 1.  Classes 2 and 3 are Galois conjugate over Q.
+**Total:** 63 = 24 + 16 + 16 + 6 + 1.  Classes 2 and 3 are Galois conjugate
+over Q; each orbit is individually well-defined over Q(√2) since the Igusa
+invariants involve w³ − w = √2.
 
 #### Extra Z/3 symmetry (elliptic j-invariant from branch point Z/3-orbit)
 
@@ -143,7 +144,7 @@ stabilizes each complex with a subgroup of order ≥ 4, inducing extra involutio
 
 | Igusa class | RA ⊇ | Lambda min poly | Elliptic j (Z/2 quotient) | Complex indices |
 |-------------|-------|-----------------|---------------------------|-----------------|
-| 5: (50000, 3750, -125) | D_12 | t^2 + 1 | j = 8000 | 34 |
+| 5: (50000, 3750, -125) | D_6 | t^2 + 1 | j = 8000 | 34 |
 | 4: (8388608, 245760, 4096) | (Z/2)^2 | t^2 - 1/2 | j = 128 | 3, 4, 38, 40, 62, 63 |
 
 **Class 5 (the unique complex #34):** This is the most special Prym of the Fermat quartic.
@@ -170,11 +171,11 @@ Classes 2, 3 have RA ⊇ S_3 (Z/3 orbit present, which forces an involution).
 | 4 (j1=8388608) | 6 | 4 | {3,38,63}, {3,40,62}, {4,38,62}, {4,40,63} |
 | 5 (j1=50000) | 1 | 0 | (only 1 element) |
 
-**Observation:** The two Galois-conjugate 16-element classes have ZERO syzygetic triples.
+**Observation:** The two Galois-conjugate 16-element classes have ZERO collinear triples.
 This is remarkable: among C(16,3) = 560 triples, not a single one sums to zero in J[2].
 This strongly constrains the geometry of how these 16 elements sit inside F_2^6.
 
-Meanwhile, class 1 (24 elements) has 64 syzygetic triples out of C(24,3) = 2024
+Meanwhile, class 1 (24 elements) has 64 collinear triples out of C(24,3) = 2024
 possible, and class 4 (6 elements) has 4 out of C(6,3) = 20.
 
 ---
@@ -199,20 +200,20 @@ Restriction to S_3 is SEMISIMPLE: trivial + trivial + irred(2) + irred(2).
 **S_4 orbits on J[2]\{0}:** 10 orbits, sizes {1, 3, 3, 4, 4, 6, 6, 12, 12, 12},
 **exactly matching the 10 Igusa invariant classes.**
 
-### Igusa classes, extra symmetries, and syzygetic triples
+### Igusa classes, extra symmetries, and collinear triples
 
-| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Syz. triples |
-|---|----------------------------------------|-------|------|--------------|
-| 1 | (1729733224448/151875, 1496258752/5625, -1425053696/4100625) | 12 | Z/2 | 0 |
-| 2 | (31172342123300864/5955980625, ..., 68168000576/73530625) | 12 | Z/2 | 0 |
-| 3 | (800000000/81, 23560000/81, 40000/9) | 12 | Z/2 | 8 |
-| 4 | (68934134667875/28588707, ..., -316737676475/771895089) | 6 | Z/2 | 4 |
-| 5 | (1429519218944000/28588707, ..., 33694083654400/771895089) | 6 | Z/2 | 4 |
-| 6 | (6400000/3, 440000/9, -32000/81) | 4 | D_12 | 0 |
-| 7 | (443801324800000/85766121, ..., -186184000/352947) | 4 | S_3 | 0 |
-| 8 | (729486255135700992/1838265625, ..., 448159706914816/771895089) | 3 | Z/2 | 1 |
-| 9 | (607660606990336/220591875, ..., -3387870464/9529569) | 3 | (Z/2)^2 | 0 |
-| 10 | (328783729403804707/5514796875, ..., -281175372827/238239225) | 1 | S_3 | 0 |
+| # | Absolute Igusa invariants (j1, j2, j3) | Count | RA ⊇ | Coll. triples | Orbit field |
+|---|----------------------------------------|-------|------|--------------|-------------|
+| 1 | (1729733224448/151875, 1496258752/5625, -1425053696/4100625) | 12 | Z/2 | 0 | Q |
+| 2 | (31172342123300864/5955980625, ..., 68168000576/73530625) | 12 | Z/2 | 0 | Q |
+| 3 | (800000000/81, 23560000/81, 40000/9) | 12 | Z/2 | 8 | Q |
+| 4 | (68934134667875/28588707, ..., -316737676475/771895089) | 6 | Z/2 | 4 | Q |
+| 5 | (1429519218944000/28588707, ..., 33694083654400/771895089) | 6 | Z/2 | 4 | Q |
+| 6 | (6400000/3, 440000/9, -32000/81) | 4 | D_6 | 0 | Q |
+| 7 | (443801324800000/85766121, ..., -186184000/352947) | 4 | S_3 | 0 | Q |
+| 8 | (729486255135700992/1838265625, ..., 448159706914816/771895089) | 3 | Z/2 | 1 | Q |
+| 9 | (607660606990336/220591875, ..., -3387870464/9529569) | 3 | (Z/2)^2 | 0 | Q |
+| 10 | (328783729403804707/5514796875, ..., -281175372827/238239225) | 1 | S_3 | 0 | Q |
 
 **Total:** 63 = 12 + 12 + 12 + 6 + 6 + 4 + 4 + 3 + 3 + 1.
 
@@ -240,8 +241,8 @@ stabilizes each complex with a subgroup of order ≥ 2, inducing extra involutio
 
 | Igusa class | RA ⊇ | Lambda | Elliptic j (Z/2 quotient) |
 |-------------|-------|--------|---------------------------|
-| 6 (4 members) | D_12 | lambda = -2 | **j = 54000** |
-| 9 (3 members) | (Z/2)^2 | lambda = -2/5 or -5/2 | j = -11664/625 or -3538944/25 |
+| 6 (4 members) | D_6 | lambda = -2 | **j = 54000** |
+| 9 (3 members) | (Z/2)^2 | lambda = -2/5 or -5/2 | j = -11664/625 or 3538944/25 |
 | 7 (4 members), 10 (1 member) | S_3 | -- | -- |
 | 1, 2, 3, 4, 5, 8 | Z/2 | -- | -- |
 
@@ -253,9 +254,7 @@ stabilizes each complex with a subgroup of order ≥ 2, inducing extra involutio
 
 **Class 9** (all 3 have (Z/2)^2):
   Complexes 23, 52: lambda = -2/5, j = -11664/625.
-  Complex 39: lambda = -5/2, j = -3538944/25.
-  **The two quotient elliptic curves are NOT isogenous** (confirmed by comparing
-  a_p at 666 primes: only 2% agreement, no twist relation).
+  Complex 39: lambda = -5/2, j = 3538944/25.
 
 #### Syzygetic triples within Igusa classes
 
@@ -273,12 +272,12 @@ stabilizes each complex with a subgroup of order ≥ 2, inducing extra involutio
 | 10 (1 member) | 1 | 0 | (only 1 element) |
 
 **Observation:** Class 8 has a remarkable property: it has exactly 3 members (complexes
-12, 20, 40) and they form a SINGLE syzygetic triple.  This means all three of these
-J[2] elements sum to zero: they are "perfectly syzygetic."  In fact, {12, 20, 40}
+12, 20, 40) and they form a SINGLE collinear triple.  This means all three of these
+J[2] elements sum to zero: they are "perfectly collinear."  In fact, {12, 20, 40}
 is also a Z/3-orbit under sigma (orbit 7 in the Z/3 action).
 
-**Observation:** Classes 4 and 5 each have 6 members with 4 syzygetic triples.
-Compare with the Fermat: class 4 there also has 6 members with 4 syzygetic triples.
+**Observation:** Classes 4 and 5 each have 6 members with 4 collinear triples.
+Compare with the Fermat: class 4 there also has 6 members with 4 collinear triples.
 
 **Observation:** Class 3 (12 members, 8 triples) has a nice structure.  Inspecting
 the triples, every element appears in exactly 2 triples (8 triples x 3 elements / 12
@@ -293,20 +292,22 @@ by the Z/3 action: {3,4,34} is a Z/3 orbit, and so is {17,37,38}, {44,61,45}, {5
 
 | Quartic | Bitangent field K | [K:Q] | # Q-rational bitangents | # Q-rational torsion classes |
 |---------|-------------------|-------|-------------------------|------------------------------|
-| Klein twist | Q(w), w² + 5w/2 + 2 = 0 | 2 | 0 (all need √-7) | 0 (all need √-7) |
-| Fermat | Q(w), w⁴ + 1 = 0 | 4 | 0 (all need ζ₈) | 0 (all need ζ₈) |
+| Klein twist | Q(w), w² + 5w/2 + 2 = 0 | 2 | 0 (all need √-7) | 7 |
+| Fermat | Q(w), w⁴ + 1 = 0 | 4 | 0 (all need ζ₈) | 7 |
 | Edge | **Q** | **1** | **28 (all)** | **63 (all)** |
 
 The Edge quartic is exceptional: every bitangent line has rational coefficients,
 and consequently every Steiner complex (= every nontrivial 2-torsion class) is
-Galois-fixed.  This is confirmed by the computation in `edge.log`: the tangency
-ideal's univariate polynomial factors into linear factors over Q in both the
-z≠0 chart (degree 11 → 11 linear factors) and the z=0 chart (degree 4 → 4
-linear factors).  No field extension is needed for the contact quadratics either.
+Galois-fixed.  For the Klein twist and Fermat, no individual bitangent line is
+rational, but 7 out of 63 Steiner complexes are nonetheless Q-rational: a
+partition of bitangents into pairs can be Galois-stable even when the individual
+lines are not.  For Klein twist, the 7 split as 4 in the size-28 orbit + 3 in the
+size-21 orbit.  For Fermat, the 7 split as all 6 in the size-6 orbit + the
+unique singleton.
 
-This contrasts sharply with the other two quartics and explains why the Edge
-quartic has the richest arithmetic structure: 10 distinct Q-rational Igusa
-classes (vs 4 for Klein twist, 5 for Fermat), and all Prym Igusa invariants
+This contrasts with the Edge quartic which has the richest arithmetic structure:
+10 distinct Q-rational Igusa classes (vs 4 for Klein twist, 5 for Fermat),
+and all Prym Igusa invariants
 lie in Q.
 
 ### Reduced automorphism group prevalence
@@ -329,10 +330,10 @@ A striking pattern across all three quartics: **Z/3 and (Z/2)^2 are nearly compl
 - **Klein twist:** Classes 1, 3, 4 have RA ⊇ S_3 (Z/3 but not (Z/2)^2).  Class 2
   (21 members) has RA ⊇ (Z/2)^2 but no Z/3.
 - **Fermat:** Classes 2, 3 have RA ⊇ S_3 (Z/3 but not (Z/2)^2).  Class 4 has
-  RA ⊇ (Z/2)^2 but no Z/3.  Only class 5 (the unique singleton) has RA ⊇ D_12
+  RA ⊇ (Z/2)^2 but no Z/3.  Only class 5 (the unique singleton) has RA ⊇ D_6
   (both Z/3 and (Z/2)^2).
 - **Edge:** Class 9 has RA ⊇ (Z/2)^2 but no Z/3.  Classes 7, 10 have RA ⊇ S_3
-  (Z/3 but not (Z/2)^2).  Only class 6 (j = 54000, CM by sqrt(-3)) has RA ⊇ D_12.
+  (Z/3 but not (Z/2)^2).  Only class 6 (j = 54000, CM by sqrt(-3)) has RA ⊇ D_6.
 
 The complexes with both (Z/2)^2 and Z/3 are always the most "special" Pryms: the CM
 curves (j = 54000 for Edge, j = 8000 for Fermat).
@@ -347,7 +348,7 @@ For each (Z/2)^2 class, the Jacobian decomposes J ~ E_1 × E_2:
 | Fermat | 4 | j=128, j=128 | trivially yes |
 | Fermat | 5 | j=8000, j=8000 | trivially yes |
 | Edge | 6 | j=54000, j=54000 | trivially yes |
-| Edge | 9 | j=-11664/625, j=-3538944/25 | **NOT isogenous** |
+| Edge | 9 | j=-11664/625, j=3538944/25 | **2-isogenous over Q(√969)** |
 
 ### Syzygetic triple density
 
@@ -367,9 +368,9 @@ For each (Z/2)^2 class, the Jacobian decomposes J ~ E_1 × E_2:
 | Edge | 8 | 3 | 1 | 33% |
 
 The density 20% = 1/5 appears repeatedly (Klein twist classes 3, 4; Fermat class 4;
-Edge classes 4, 5).  The 6-element classes consistently yield exactly 4 syzygetic
+Edge classes 4, 5).  The 6-element classes consistently yield exactly 4 collinear
 triples = C(6,3)/5.  For 3-element classes, the maximum 1 triple = C(3,3) = 100%
-if syzygetic (Edge class 8).
+if collinear (Edge class 8).
 
 ---
 
@@ -383,13 +384,13 @@ if syzygetic (Edge class 8).
   the genus-2 Jacobian has an elliptic factor whose j-invariant is recorded there.
 - The "RA ⊇" column records a lower bound on the reduced automorphism group
   RA(C_g2) = Aut(C_g2)/<hyp. inv.>.  The possible values of RA for genus-2
-  curves are: trivial, Z/2, (Z/2)^2, S_3, D_12, S_4, Z/5.  In our tables:
+  curves are: trivial, Z/2, (Z/2)^2, S_3, D_6, S_4, Z/5.  In our tables:
   "Z/2" means some Mobius involution permutes the 6 branch points;
   "(Z/2)^2" means branch points in the form {0, 1, -1, λ, 1/λ, ∞};
   "S_3" means Z/3 orbit on branch points (which forces a companion involution);
-  "D_12" means both Z/3 and (Z/2)^2 are present.
+  "D_6" means both Z/3 and (Z/2)^2 are present.
 - "Count" = number of Steiner complexes (out of 63) giving that isomorphism class.
-- "Syz. triples" = number of unordered triples {x,y,z} of J[2] elements within
+- "Coll. triples" = number of unordered triples {x,y,z} of J[2] elements within
   that class satisfying x + y + z = 0 in F_2^6.
 - All three quartics have Z/3 symmetry sigma: (x:y:z) -> (y:z:x), giving 23 orbits
   on the 63 complexes (three fixed points + twenty size-3 orbits).  The Fermat and
